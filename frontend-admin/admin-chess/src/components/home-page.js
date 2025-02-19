@@ -15,6 +15,24 @@ const initialBoardState = [
   ["车", "马", "相", "仕", "帅", "仕", "相", "马", "车"],
 ];
 
+const pieceImages = {
+  "車": "/images/bR.svg",
+  "马": "/images/rH.svg",
+  "象": "/images/bE.svg",
+  "士": "/images/bA.svg",
+  "將": "/images/bG.svg",
+  "砲": "/images/bC.svg",
+  "兵": "/images/bS.svg",
+  "车": "/images/rR.svg",
+  "馬": "/images/bH.svg",
+  "相": "/images/rE.svg",
+  "仕": "/images/rA.svg",
+  "帅": "/images/rG.svg",
+  "炮": "/images/rC.svg",
+  "卒": "/images/rS.svg"
+};
+
+
 const HomePage = () => {
   const [board, setBoard] = useState(initialBoardState);
   const [selected, setSelected] = useState(null);
@@ -24,7 +42,7 @@ const HomePage = () => {
   // Xác định màu quân cờ: Đỏ hoặc Đen
   const getPieceColor = (piece) => {
     if (!piece) return null;
-    return "車馬象士將砲兵".includes(piece) ? "red" : "black";
+    return "車馬象士將砲兵".includes(piece) ? "white" : "black";
   };
 
   const isMoveValid = (piece, fromRow, fromCol, toRow, toCol) => {
@@ -160,7 +178,7 @@ const HomePage = () => {
         if (targetPiece === "將") {
           setWinner("Đen thắng!");
         } else if (targetPiece === "帅") {
-          setWinner("Đỏ thắng!");
+          setWinner("Trắng thắng!");
         }
         
         newBoard[row][col] = piece;
@@ -199,6 +217,23 @@ const HomePage = () => {
               Chơi Online
             </Link>
           </li>
+          <li>
+            <Link to="/chess-chat" className="hover:text-yellow-400 transition duration-300">
+              Phòng CHat Cộng đồng 
+            </Link>
+          </li><li>
+            <Link to="/chess-courses" className="hover:text-yellow-400 transition duration-300">
+              KHóa Học
+            </Link>
+          </li><li>
+            <Link to="/chess-register" className="hover:text-yellow-400 transition duration-300">
+              Đăng Kí
+            </Link>
+          </li><li>
+            <Link to="/chess-login" className="hover:text-yellow-400 transition duration-300">
+              Đăng Nhập
+            </Link>
+          </li>
         </ul>
       </nav>
 
@@ -206,57 +241,58 @@ const HomePage = () => {
       <div className="flex flex-col items-center mt-10 relative">
         <h1 className="text-2xl font-bold mb-6">Cờ Tướng</h1>
 
-        {/* Bàn cờ */}
-        <div className="grid grid-cols-9 w-[360px] h-[400px] border-2 border-gray-700 relative">
+        {/* Vùng chứa bàn cờ với hình nền */}
+        <div
+          className="relative w-[405px] h-[450px] border-2 border-gray-700"
+          style={{
+            backgroundImage: "url('/images/board.svg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          {/* Bàn cờ */}
+          <div className="grid grid-cols-9 w-[405px] h-[450px] border-2 border-gray-700 relative">
           {board.map((row, rowIndex) =>
-            row.map((piece, colIndex) => (
-              <div
-                key={`${rowIndex}-${colIndex}`}
-                onClick={() => handleCellClick(rowIndex, colIndex)}
-                className={`border border-gray-400 w-[40px] h-[40px] flex items-center justify-center cursor-pointer ${
-                  (rowIndex + colIndex) % 2 === 0 ? "bg-gray-100" : "bg-green-200"
-                } ${selected?.row === rowIndex && selected?.col === colIndex ? "bg-yellow-300" : ""}`}
-              >
-                {validMoves.some(([r, c]) => r === rowIndex && c === colIndex) && (
-                  <div className="absolute w-3 h-3 bg-yellow-400 rounded-full"></div>
-                )}
-                {piece && (
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
-                      ["車", "馬", "象", "士", "將", "砲", "兵"].includes(piece)
-                        ? "bg-red-600 text-white"
-                        : "bg-red-600 text-black"
-                    }`}
-                  >
-                    {piece}
-                  </div>
-                )}
-              </div>
-            ))
-          )}
+              row.map((piece, colIndex) => (
+                <div
+                  key={`${rowIndex}-${colIndex}`}
+                  onClick={() => handleCellClick(rowIndex, colIndex)}
+                  className={` w-[40px] h-[40px] flex items-center justify-center cursor-pointer ${
+                    (rowIndex + colIndex) % 2 === 0 ? "" : ""
+                  } ${selected?.row === rowIndex && selected?.col === colIndex ? "bg-yellow-300" : ""}`}
+                >
+                  {validMoves.some(([r, c]) => r === rowIndex && c === colIndex) && (
+                    <div className="absolute w-3 h-3 bg-yellow-400 rounded-full"></div>
+                  )}
 
-          {/* Hiển thị thông báo Thắng/Thua */}
-          {winner && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 pointer-events-none">
-              <span className="text-6xl font-extrabold text-white drop-shadow-2xl animate-pulse mb-6">
-                {winner}
-              </span>
-              
-              {/* Nút Restart */}
-              <button
-                onClick={() => {
-                  setBoard(initialBoardState);
-                  setWinner(null);
-                  setSelected(null);
-                  setValidMoves([]);
-                }}
-                className="px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-lg hover:bg-blue-700 transition-all duration-300 pointer-events-auto"
-              >
-                Chơi lại
-              </button>
+                  {piece && <img src={pieceImages[piece]} alt={piece} className="w-8 h-8" />}
+                </div>
+              ))
+            )}
+
+            {/* Hiển thị thông báo Thắng/Thua */}
+            {winner && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 pointer-events-none">
+                <span className="text-5xl font-extrabold text-white drop-shadow-2xl animate-pulse mb-6">
+                  {winner} 
+                </span>
+                
+                {/* Nút Restart */}
+                <button
+                  onClick={() => {
+                    setBoard(initialBoardState);
+                    setWinner(null);
+                    setSelected(null);
+                    setValidMoves([]);
+                  }}
+                  className="px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-lg hover:bg-blue-700 transition-all duration-300 pointer-events-auto"
+                >
+                  Chơi lại
+                </button>
+              </div>
+            )}
             </div>
-          )}
-          </div>
+            </div>
         </div>
     </div>
   );
