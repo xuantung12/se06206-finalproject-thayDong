@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+
 
 
 const initialBoardState = [
@@ -38,14 +38,48 @@ const ChessOnline = () => {
   const [selected, setSelected] = useState(null);
   const [validMoves, setValidMoves] = useState([]);
   const [winner, setWinner] = useState(null);
+  const [checkMessage, setCheckMessage] = useState(null); // Trạng thái hiển thị "Chiếu tướng"
+  const [highlightedTargets, setHighlightedTargets] = useState([]);
 
   // Xác định màu quân cờ: Đỏ hoặc Đen
   const getPieceColor = (piece) => {
     if (!piece) return null;
-    return "車馬象士將砲兵".includes(piece) ? "white" : "black";
+    return "車馬象士將砲兵".includes(piece) ? "black" : "red";
   };
 
-  const isMoveValid = (piece, fromRow, fromCol, toRow, toCol) => {
+
+  // Kiểm tra nếu tướng đang bị chiếu ngay sau nước đi
+  const isKingInCheck = (newBoard) => {
+    let redKing = null, blackKing = null;
+
+    // Tìm vị trí của tướng đỏ (帅) và tướng đen (將)
+    for (let r = 0; r < 10; r++) {
+      for (let c = 0; c < 9; c++) {
+        if (newBoard[r][c] === "帅") redKing = [r, c];
+        if (newBoard[r][c] === "將") blackKing = [r, c];
+      }
+    }
+
+    // Kiểm tra xem có quân nào có thể ăn tướng hay không
+    for (let r = 0; r < 10; r++) {
+      for (let c = 0; c < 9; c++) {
+        const piece = newBoard[r][c];
+        if (piece) {
+          const moves = findValidMoves(r, c, newBoard);
+          for (let [mr, mc] of moves) {
+            if ((redKing && mr === redKing[0] && mc === redKing[1]) ||
+                (blackKing && mr === blackKing[0] && mc === blackKing[1])) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
+  };
+
+  
+  const isMoveValid = (piece, fromRow, fromCol, toRow, toCol, boardState = board ) => {
     const targetPiece = board[toRow][toCol];
     const pieceColor = getPieceColor(piece);
     const targetPieceColor = getPieceColor(targetPiece);
@@ -146,80 +180,120 @@ const ChessOnline = () => {
   };
 
 
-  const findValidMoves = (row, col) => {
-    const piece = board[row][col];
+
+
+
+  const findValidMoves = (row, col, boardState = board) => {
+    const piece = boardState[row][col];
     let moves = [];
-  
+
     for (let r = 0; r < 10; r++) {
       for (let c = 0; c < 9; c++) {
-        if (isMoveValid(piece, row, col, r, c)) {
+        if (isMoveValid(piece, row, col, r, c, boardState)) {
           moves.push([r, c]);
         }
       }
     }
     return moves;
   };
-  
+  // 55555555//  666//
   const handleCellClick = (row, col) => {
     if (winner) return; // Nếu đã có người thắng, không cho phép tiếp tục
-  
+
     if (selected) {
-      const { row: fromRow, col: fromCol } = selected;
-      const piece = board[fromRow][fromCol];
-  
-      if (fromRow === row && fromCol === col) {
-        setSelected(null);
-        setValidMoves([]);
-      } else if (isMoveValid(piece, fromRow, fromCol, row, col)) {
-        const newBoard = board.map((r) => [...r]);
-        const targetPiece = newBoard[row][col];
-  
-        // Kiểm tra nếu ăn Tướng
-        if (targetPiece === "將") {
-          setWinner("Đen thắng!");
-        } else if (targetPiece === "帅") {
-          setWinner("Trắng thắng!");
+        const { row: fromRow, col: fromCol } = selected;
+        const piece = board[fromRow][fromCol];
+
+        if (fromRow === row && fromCol === col) {
+            setSelected(null);
+            setValidMoves([]);
+            setHighlightedTargets([]); // Xóa highlight các quân bị đe dọa
+        } else if (isMoveValid(piece, fromRow, fromCol, row, col)) {
+            const newBoard = board.map((r) => [...r]);
+            const targetPiece = newBoard[row][col];
+
+            // Thử di chuyển quân cờ
+            newBoard[row][col] = piece;
+            newBoard[fromRow][fromCol] = null;
+
+            // Kiểm tra chiếu tướng ngay lập tức
+            if (isKingInCheck(newBoard)) {
+                setCheckMessage(
+                    <span className="flex">
+                        <img
+                        src="/images/2swords.png"
+                        alt="Chiếu Tướng"
+                        style={{ width: "80px", height: "80px" }}
+                        />
+                        <p className="mt-5">Chiếu tướng!</p>
+                    </span>
+                );
+                setTimeout(() => setCheckMessage(null), 1000);
+            }
+
+            // Nếu quân cờ vừa di chuyển làm hai tướng đối diện -> Không hợp lệ
+            if (areKingsFacing(newBoard)) {
+                return;
+            }
+
+            // Kiểm tra nếu ăn tướng
+            if (targetPiece === "將") {
+                setWinner("Đen thắng!");
+            } else if (targetPiece === "帅") {
+                setWinner("Trắng thắng!");
+            }
+
+
+            
+            setBoard(newBoard);
+            setSelected(null);
+            setValidMoves([]);
+            setHighlightedTargets([]); // Xóa highlight
         }
-        
-        newBoard[row][col] = piece;
-        newBoard[fromRow][fromCol] = null;
-        setBoard(newBoard);
-        setSelected(null);
-        setValidMoves([]);
-      }
     } else if (board[row][col]) {
-      setSelected({ row, col });
-      setValidMoves(findValidMoves(row, col));
+        setSelected({ row, col });
+        const moves = findValidMoves(row, col);
+        setValidMoves(moves);
+
+        // Xác định các quân cờ có thể bị ăn và highlight chúng
+        const targets = moves.filter(([r, c]) => board[r][c] !== null); 
+        setHighlightedTargets(targets);
     }
-  };
+};
+  
+
+const areKingsFacing = (board) => {
+  let blackKingCol = null;
+  let redKingCol = null;
+  let blackKingRow = -1;
+  let redKingRow = -1;
+
+  for (let r = 0; r < 10; r++) {
+    for (let c = 0; c < 9; c++) {
+      if (board[r][c] === "將") {
+        blackKingCol = c;
+        blackKingRow = r;
+      } else if (board[r][c] === "帅") {
+        redKingCol = c;
+        redKingRow = r;
+      }
+    }
+  }
+
+  if (blackKingCol === redKingCol) {
+    // Kiểm tra có vật cản giữa hai tướng không
+    for (let r = Math.min(blackKingRow, redKingRow) + 1; r < Math.max(blackKingRow, redKingRow); r++) {
+      if (board[r][blackKingCol]) return false;
+    }
+    return true; // Hai tướng đối diện nhau
+  }
+
+  return false;
+};
+
 
   return (
     <div>
-      {/* Thanh Navigation */}
-      <nav className="bg-gray-900 text-white p-4 flex justify-between items-center shadow-lg">
-        <div className="flex items-center">
-          <img src="/images/chess-piece.png" alt="Cờ Tướng" className="w-10 h-10 mr-2" />
-          <span className="text-xl font-bold">Cờ Tướng</span>
-        </div>
-        <ul className="flex space-x-6">
-          <li>
-            <Link to="/" className="hover:text-yellow-400 transition duration-300">
-              Trang Chủ
-            </Link>
-          </li>
-          <li>
-            <Link to="/chess-offline" className="hover:text-yellow-400 transition duration-300">
-              Chơi với máy
-            </Link>
-          </li>
-          <li>
-            <Link to="/chess-online" className="hover:text-yellow-400 transition duration-300">
-              Chơi Online
-            </Link>
-          </li>
-        </ul>
-      </nav>
-
       {/* Bàn cờ */}
       <div className="flex flex-col items-center mt-10 relative">
         <h1 className="text-2xl font-bold mb-6">Cờ Tướng</h1>
@@ -236,22 +310,32 @@ const ChessOnline = () => {
           {/* Bàn cờ */}
           <div className="grid grid-cols-9 w-[405px] h-[450px] border-2 border-gray-700 relative">
           {board.map((row, rowIndex) =>
-              row.map((piece, colIndex) => (
-                <div
-                  key={`${rowIndex}-${colIndex}`}
-                  onClick={() => handleCellClick(rowIndex, colIndex)}
-                  className={` w-[40px] h-[40px] flex items-center justify-center cursor-pointer ${
-                    (rowIndex + colIndex) % 2 === 0 ? "" : ""
-                  } ${selected?.row === rowIndex && selected?.col === colIndex ? "bg-yellow-300" : ""}`}
-                >
-                  {validMoves.some(([r, c]) => r === rowIndex && c === colIndex) && (
-                    <div className="absolute w-3 h-3 bg-yellow-400 rounded-full"></div>
-                  )}
+            row.map((piece, colIndex) => {
+                const isHighlighted = highlightedTargets.some(([r, c]) => r === rowIndex && c === colIndex);
+                return (
+                    <div
+                        key={`${rowIndex}-${colIndex}`}
+                        onClick={() => handleCellClick(rowIndex, colIndex)}
+                        className={`w-[40px] h-[40px] flex items-center justify-center cursor-pointer relative
+                          ${selected?.row === rowIndex && selected?.col === colIndex ? "bg-[rgb(143_0_0_/_83%)]" : ""}
+                          ${isHighlighted ? "shadow-[0_0_10px_4px_rgba(255,0,0,0.7)]" : ""}
+                      `}
+                    >
+                        {validMoves.some(([r, c]) => r === rowIndex && c === colIndex) && (
+                            <div className="absolute w-3 h-3 bg-[rgb(143_0_0_/_83%)] rounded-full hover:bg-yellow-500"></div>
+                        )}
 
-                  {piece && <img src={pieceImages[piece]} alt={piece} className="w-8 h-8" />}
-                </div>
-              ))
-            )}
+                        {piece && <img src={pieceImages[piece]} alt={piece} className="w-8 h-8" />}
+                    </div>
+                );
+            })
+        )}
+
+          {checkMessage && (
+          <div className="absolute inset-0 flex items-center justify-center  bg-opacity-50 text-black text-3xl font-bold">
+            {checkMessage}
+          </div>
+        )}
 
             {/* Hiển thị thông báo Thắng/Thua */}
             {winner && (
