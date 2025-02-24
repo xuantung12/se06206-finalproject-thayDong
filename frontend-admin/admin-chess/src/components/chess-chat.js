@@ -47,7 +47,7 @@ const ChessChat = () => {
             </nav>
 
             <div>
-                <p>đây là trang chát cộng đồng </p>
+                <p>đây là trang chát cộng đồng có thể giao tiếp public với nhau </p>
             </div>
     </div>
     
