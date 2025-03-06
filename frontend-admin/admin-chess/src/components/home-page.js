@@ -1,301 +1,148 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { FaGamepad, FaPuzzlePiece, FaBook, FaTv, FaCommentDots, FaSun, FaMoon, FaGlobe, FaSignInAlt } from "react-icons/fa";
 
 
-const initialBoardState = [
-  ["車", "馬", "象", "士", "將", "士", "象", "馬", "車"],
-  [null, null, null, null, null, null, null, null, null],
-  [null, "砲", null, null, null, null, null, "砲", null],
-  ["兵", null, "兵", null, "兵", null, "兵", null, "兵"],
-  [null, null, null, null, null, null, null, null, null],
-  [null, null, null, null, null, null, null, null, null],
-  ["卒", null, "卒", null, "卒", null, "卒", null, "卒"],
-  [null, "炮", null, null, null, null, null, "炮", null],
-  [null, null, null, null, null, null, null, null, null],
-  ["车", "马", "相", "仕", "帅", "仕", "相", "马", "车"],
-];
+export default function HomePage() {
+  const [darkMode, setDarkMode] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [playMenuOpen, setPlayMenuOpen] = useState(false);
+  const [keepOpen, setKeepOpen] = useState(false);
+  const [language, setLanguage] = useState("en"); // Trạng thái ngôn ngữ
 
-const pieceImages = {
-  "車": "/images/bR.svg",
-  "马": "/images/rH.svg",
-  "象": "/images/bE.svg",
-  "士": "/images/bA.svg",
-  "將": "/images/bG.svg",
-  "砲": "/images/bC.svg",
-  "兵": "/images/bS.svg",
-  "车": "/images/rR.svg",
-  "馬": "/images/bH.svg",
-  "相": "/images/rE.svg",
-  "仕": "/images/rA.svg",
-  "帅": "/images/rG.svg",
-  "炮": "/images/rC.svg",
-  "卒": "/images/rS.svg"
-};
-
-
-const HomePage = () => {
-  const [board, setBoard] = useState(initialBoardState);
-  const [selected, setSelected] = useState(null);
-  const [validMoves, setValidMoves] = useState([]);
-  const [winner, setWinner] = useState(null);
-
-  // Xác định màu quân cờ: Đỏ hoặc Đen
-  const getPieceColor = (piece) => {
-    if (!piece) return null;
-    return "車馬象士將砲兵".includes(piece) ? "white" : "black";
-  };
-
-  const isMoveValid = (piece, fromRow, fromCol, toRow, toCol) => {
-    const targetPiece = board[toRow][toCol];
-    const pieceColor = getPieceColor(piece);
-    const targetPieceColor = getPieceColor(targetPiece);
-
-    // Nếu ô đích có quân cùng màu -> Không hợp lệ
-    if (targetPiece && pieceColor === targetPieceColor) return false;
-
-    const rowDiff = Math.abs(toRow - fromRow);
-    const colDiff = Math.abs(toCol - fromCol);
-
-    switch (piece) {
-      case "將":
-      case "帅":
-        return (
-          toCol >= 3 &&
-          toCol <= 5 &&
-          ((toRow >= 0 && toRow <= 2) || (toRow >= 7 && toRow <= 9)) &&
-          rowDiff + colDiff === 1
-        );
-      case "士":
-      case "仕":
-        return (
-          toCol >= 3 &&
-          toCol <= 5 &&
-          ((toRow >= 0 && toRow <= 2) || (toRow >= 7 && toRow <= 9)) &&
-          rowDiff === 1 &&
-          colDiff === 1
-        );
-      case "象":
-      case "相":
-        return (
-          rowDiff === 2 &&
-          colDiff === 2 &&
-          ((fromRow < 5 && toRow < 5) || (fromRow >= 5 && toRow >= 5)) &&
-          board[(fromRow + toRow) / 2][(fromCol + toCol) / 2] === null
-        );
-      case "兵":
-        return (
-          (toRow > fromRow && rowDiff === 1 && colDiff === 0) ||
-          (fromRow >= 5 && rowDiff === 0 && colDiff === 1)
-        );
-      case "卒":
-        return (
-          (toRow < fromRow && rowDiff === 1 && colDiff === 0) ||
-          (fromRow <= 4 && rowDiff === 0 && colDiff === 1)
-        );
-      case "車":
-      case "车":
-        if (fromRow === toRow) {
-          const minCol = Math.min(fromCol, toCol);
-          const maxCol = Math.max(fromCol, toCol);
-          for (let col = minCol + 1; col < maxCol; col++) {
-            if (board[fromRow][col]) return false;
-          }
-          return true;
-        } else if (fromCol === toCol) {
-          const minRow = Math.min(fromRow, toRow);
-          const maxRow = Math.max(fromRow, toRow);
-          for (let row = minRow + 1; row < maxRow; row++) {
-            if (board[row][fromCol]) return false;
-          }
-          return true;
-        }
-        return false;
-      case "馬":
-      case "马":
-        return (
-          (rowDiff === 2 && colDiff === 1 && !board[(fromRow + toRow) / 2][fromCol]) ||
-          (rowDiff === 1 && colDiff === 2 && !board[fromRow][(fromCol + toCol) / 2])
-        );
-      case "砲":
-      case "炮":
-        let count = 0;
-        if (fromRow === toRow) {
-          const minCol = Math.min(fromCol, toCol);
-          const maxCol = Math.max(fromCol, toCol);
-          for (let col = minCol + 1; col < maxCol; col++) {
-            if (board[fromRow][col]) count++;
-          }
-        } else if (fromCol === toCol) {
-          const minRow = Math.min(fromRow, toRow);
-          const maxRow = Math.max(fromRow, toRow);
-          for (let row = minRow + 1; row < maxRow; row++) {
-            if (board[row][fromCol]) count++;
-          }
-        } else {
-          return false;
-        }
-
-        // Nếu ô đích không có quân -> Không được có vật cản
-        if (!targetPiece) return count === 0;
-
-        // Nếu ô đích có quân -> Phải có đúng 1 vật cản giữa đường
-        return count === 1;
-      default:
-        return false;
-    }
-  };
-
-
-  const findValidMoves = (row, col) => {
-    const piece = board[row][col];
-    let moves = [];
-  
-    for (let r = 0; r < 10; r++) {
-      for (let c = 0; c < 9; c++) {
-        if (isMoveValid(piece, row, col, r, c)) {
-          moves.push([r, c]);
-        }
-      }
-    }
-    return moves;
-  };
-  
-  const handleCellClick = (row, col) => {
-    if (winner) return; // Nếu đã có người thắng, không cho phép tiếp tục
-  
-    if (selected) {
-      const { row: fromRow, col: fromCol } = selected;
-      const piece = board[fromRow][fromCol];
-  
-      if (fromRow === row && fromCol === col) {
-        setSelected(null);
-        setValidMoves([]);
-      } else if (isMoveValid(piece, fromRow, fromCol, row, col)) {
-        const newBoard = board.map((r) => [...r]);
-        const targetPiece = newBoard[row][col];
-  
-        // Kiểm tra nếu ăn Tướng
-        if (targetPiece === "將") {
-          setWinner("Đen thắng!");
-        } else if (targetPiece === "帅") {
-          setWinner("Trắng thắng!");
-        }
-        
-        newBoard[row][col] = piece;
-        newBoard[fromRow][fromCol] = null;
-        setBoard(newBoard);
-        setSelected(null);
-        setValidMoves([]);
-      }
-    } else if (board[row][col]) {
-      setSelected({ row, col });
-      setValidMoves(findValidMoves(row, col));
-    }
-  };
 
   return (
-    <div>
-      {/* Thanh Navigation */}
-      <nav className="bg-gray-900 text-white p-4 flex justify-between items-center shadow-lg">
-        <div className="flex items-center">
-          <img src="/images/chess-piece.png" alt="Cờ Tướng" className="w-10 h-10 mr-2" />
-          <span className="text-xl font-bold">Cờ Tướng</span>
+    <div className={`flex ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
+      {/* Sidebar */}
+      <aside
+        className={`min-h-screen bg-orange-900 text-white flex flex-col items-center transition-all duration-300 ${
+          isExpanded ? "w-64" : "w-16"
+        }`}
+        onMouseEnter={() => {
+          setIsExpanded(true);
+        }}
+        onMouseLeave={() => {
+          if (!keepOpen) {
+            setIsExpanded(false);
+            setPlayMenuOpen(false);
+          }
+        }}
+      >
+        {/* Logo */}
+        <a href="/" className="flex items-center space-x-3 mt-5 mb-5">
+          <img
+            src="/images/chess-piece.png"
+            alt="anh anh quan co do"
+            className="w-12 h-12"
+          />
+          {isExpanded && <span className="text-2xl font-bold">CoTuong.com</span>}
+        </a>
+
+
+        {/* Navigation */}
+        <nav className="space-y-4 w-full">
+          <div
+            className="relative"
+            onMouseEnter={() => {
+              setPlayMenuOpen(true);
+              setKeepOpen(true);
+            }}
+            onMouseLeave={() => {
+              setKeepOpen(false);
+              setTimeout(() => {
+                if (!keepOpen) {
+                  setPlayMenuOpen(false);
+                }
+              }, 200);
+            }}
+          >
+          <MenuItem icon={<FaGamepad />} text={language === "en" ? "Play Now" : "Chơi Ngay"} isExpanded={isExpanded} link="home-page" />
+          </div>
+          <MenuItem icon={<FaPuzzlePiece />} text={language === "en" ? "Puzzles" : "Câu đố"} isExpanded={isExpanded} link="/chess-courses" />
+          <MenuItem icon={<FaBook />} text={language === "en" ? "Course" : "Khóa Học"} isExpanded={isExpanded} link="/chess-courses" />
+          <MenuItem icon={<FaCommentDots />} text={language === "en" ? "Chat" : "Trò chuyện"} isExpanded={isExpanded} link="/chess-chat" />
+        </nav>
+
+
+        {/* Other Options */}
+        <div className="mt-auto space-y-3 w-full mb-5">
+          <button
+            className="flex items-center space-x-2 w-full p-2 hover:bg-orange-700 rounded"
+            onClick={() => setLanguage(language === "en" ? "vi" : "en")}
+          >
+            <FaGlobe />
+            {isExpanded && <span>{language === "en" ? "English" : "Tiếng Việt"}</span>}
+          </button>
+          <button
+            className="flex items-center space-x-2 w-full p-2 hover:bg-orange-900 rounded"
+            onClick={() => setDarkMode(!darkMode)}
+          >
+            {darkMode ? <FaSun /> : <FaMoon />}
+            {isExpanded && <span>{darkMode ? (language === "en" ? "Light Mode" : "Chế độ sáng") : (language === "en" ? "Dark Mode" : "Chế độ tối")}</span>}
+          </button>
+          <MenuItem icon={<FaSignInAlt />} text={language === "en" ? "Sign In" : "Đăng nhập"} isExpanded={isExpanded} link="/chess-login" />
         </div>
-        <ul className="flex space-x-6">
-          <li>
-            <Link to="/" className="hover:text-yellow-400 transition duration-300">
-              Trang Chủ
-            </Link>
-          </li>
-          <li>
-            <Link to="/chess-offline" className="hover:text-yellow-400 transition duration-300">
-              Chơi với máy
-            </Link>
-          </li>
-          <li>
-            <Link to="/chess-online" className="hover:text-yellow-400 transition duration-300">
-              Chơi Online
-            </Link>
-          </li>
-          <li>
-            <Link to="/chess-chat" className="hover:text-yellow-400 transition duration-300">
-              Phòng CHat Cộng đồng 
-            </Link>
-          </li><li>
-            <Link to="/chess-courses" className="hover:text-yellow-400 transition duration-300">
-              KHóa Học
-            </Link>
-          </li><li>
-            <Link to="/chess-register" className="hover:text-yellow-400 transition duration-300">
-              Đăng Kí
-            </Link>
-          </li><li>
-            <Link to="/chess-login" className="hover:text-yellow-400 transition duration-300">
-              Đăng Nhập
-            </Link>
-          </li>
-        </ul>
-      </nav>
+      </aside>
 
-      {/* Bàn cờ */}
-      <div className="flex flex-col items-center mt-10 relative">
-        <h1 className="text-2xl font-bold mb-6">Cờ Tướng</h1>
 
-        {/* Vùng chứa bàn cờ với hình nền */}
+      {/* Sub-menu (Play) */}
+      {playMenuOpen && (
         <div
-          className="relative w-[405px] h-[450px] border-2 border-gray-700"
-          style={{
-            backgroundImage: "url('/images/board.svg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
+          className={`absolute ${isExpanded ? "left-64" : "left-16"} top-0 bg-white text-gray-900 shadow-lg w-48 border border-gray-300 flex flex-col min-h-screen`}
+          onMouseEnter={() => {
+            setKeepOpen(true);
+          }}
+          onMouseLeave={() => {
+            setKeepOpen(false);
+            setPlayMenuOpen(false);
+            setIsExpanded(false);
           }}
         >
-          {/* Bàn cờ */}
-          <div className="grid grid-cols-9 w-[405px] h-[450px] border-2 border-gray-700 relative">
-          {board.map((row, rowIndex) =>
-              row.map((piece, colIndex) => (
-                <div
-                  key={`${rowIndex}-${colIndex}`}
-                  onClick={() => handleCellClick(rowIndex, colIndex)}
-                  className={` w-[40px] h-[40px] flex items-center justify-center cursor-pointer ${
-                    (rowIndex + colIndex) % 2 === 0 ? "" : ""
-                  } ${selected?.row === rowIndex && selected?.col === colIndex ? "bg-yellow-300" : ""}`}
-                >
-                  {validMoves.some(([r, c]) => r === rowIndex && c === colIndex) && (
-                    <div className="absolute w-3 h-3 bg-yellow-400 rounded-full"></div>
-                  )}
-
-                  {piece && <img src={pieceImages[piece]} alt={piece} className="w-8 h-8" />}
-                </div>
-              ))
-            )}
-
-            {/* Hiển thị thông báo Thắng/Thua */}
-            {winner && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 pointer-events-none">
-                <span className="text-5xl font-extrabold text-white drop-shadow-2xl animate-pulse mb-6">
-                  {winner} 
-                </span>
-                
-                {/* Nút Restart */}
-                <button
-                  onClick={() => {
-                    setBoard(initialBoardState);
-                    setWinner(null);
-                    setSelected(null);
-                    setValidMoves([]);
-                  }}
-                  className="px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-lg hover:bg-blue-700 transition-all duration-300 pointer-events-auto"
-                >
-                  Chơi lại
-                </button>
-              </div>
-            )}
-            </div>
-            </div>
+          <a href="/chess-offline" className="block p-3 hover:bg-gray-200">{language === "en" ? "Play vs Computer" : "Chơi với máy"}</a>
+          <a href="/chess-online" className="block p-3 hover:bg-gray-200">{language === "en" ? "Play Online" : "Chơi Online"}</a>
+          <a href="/option3" className="block p-3 hover:bg-gray-200">{language === "en" ? "Custom 3" : "Tùy chỉnh 3"}</a>
+          <a href="/option4" className="block p-3 hover:bg-gray-200">{language === "en" ? "Custom 4" : "Tùy chỉnh 4"}</a>
         </div>
+      )}
+
+
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col items-center justify-center p-10">
+        <h2 className="text-3xl font-bold mb-5">
+          <a href="/" className="text-orange-900 hover:underline">{language === "en" ? "Welcome to CoTuong.com!" : "Chào mừng đến với CoTuong.com!"}</a>
+        </h2>
+        <div className="space-y-4 w-96">
+          <MainButton icon={<FaGamepad />} title={language === "en" ? "Play Online" : "Chơi Online"} subtitle={language === "en" ? "Challenge Players Worldwide" : "Thách đấu người chơi toàn cầu"} link="/chess-online" />
+          <MainButton icon={<FaTv />} title={language === "en" ? "Play Computer" : "Chơi với máy"} subtitle={language === "en" ? "Test Your Skills Against AI" : "Thử thách với AI"} link="/chess-offline" />
+          <MainButton icon={<FaPuzzlePiece />} title={language === "en" ? "Solve Puzzles" : "Giải đố"} subtitle={language === "en" ? "Solve Brain-Teasing Puzzles" : "Giải câu đố thử thách"} link="/puzzles" />
+          <MainButton icon={<FaBook />} title={language === "en" ? "Lessons" : "Khóa học"} subtitle={language === "en" ? "Learn How to Play" : "Học cách chơi Cờ Tướng"} link="/lessons" />
+          <MainButton icon={<FaTv />} title={language === "en" ? "Watch Games" : "Xem Trận Đấu"} subtitle={language === "en" ? "Learn from Other Players" : "Học từ người chơi khác"} link="/watch" />
+        </div>
+      </main>
     </div>
   );
-};
+}
 
-export default HomePage;
+
+// Component cho menu item trong sidebar
+function MenuItem({ icon, text, isExpanded, link, onClick }) {
+  return (
+    <a href={link} onClick={onClick} className="flex items-center space-x-2 w-full p-2 hover:bg-orange-700 rounded">
+      <span className="text-xl">{icon}</span>
+      {isExpanded && <span>{text}</span>}
+    </a>
+  );
+}
+
+
+// Component cho các nút trong trang chính
+function MainButton({ icon, title, subtitle, link }) {
+  return (
+    <a href={link} className="flex items-center space-x-4 w-full border border-orange-900 p-4 rounded-lg hover:bg-red-100">
+      <div className="text-orange-900 text-xl">{icon}</div>
+      <div>
+        <h3 className="text-lg font-bold text-orange-900">{title}</h3>
+        <p className="text-sm">{subtitle}</p>
+      </div>
+    </a>
+  );
+}
