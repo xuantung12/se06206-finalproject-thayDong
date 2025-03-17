@@ -17,6 +17,12 @@ const io = new Server(server, {
   }
 });
 
+const waitingPlayers = {
+  red: null,
+  black: null,
+  any: []  // Người chơi không chọn màu cụ thể
+};
+
 // Game rooms data structure
 const rooms = new Map();
 
@@ -187,29 +193,24 @@ io.on('connection', (socket) => {
     room.gameStarted = false;
   });
 
-  // Handle game restart
-  socket.on('restartGame', ({ roomId }) => {
-    // Check if room exists
-    if (!rooms.has(roomId)) return;
+  socket.on('restartGame', () => {
+    setBoard(initialBoardState);
+    setWinner(null);
+    setSelected(null);
+    setValidMoves([]);
+    setRedTotalTime(600);
+    setBlackTotalTime(600);
+    setRedMoveTime(120);
+    setBlackMoveTime(120);
+    setCurrentTurn("red");
+    setGameStarted(true);
+    setHighlightedTargets([]);
     
-    const room = rooms.get(roomId);
-    
-    // Reset game state
-    room.board = JSON.parse(JSON.stringify(initialBoardState));
-    room.currentTurn = 'red';
-    room.gameStarted = true;
-    room.timers = {
-      redTotal: 600,
-      blackTotal: 600,
-      redMove: 120,
-      blackMove: 120
-    };
-    
-    // Broadcast restart to all players
-    io.to(roomId).emit('restartGame');
-    
-    // Broadcast timer updates to all players
-    io.to(roomId).emit('updateTimers', room.timers);
+    // Quan trọng: Xóa bộ đếm hiện tại để đảm bảo useEffect sẽ tạo bộ đếm mới
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
   });
 
   // Handle game start notification
@@ -222,9 +223,61 @@ io.on('connection', (socket) => {
     
     // Broadcast to all players
     io.to(roomId).emit('gameStarted');
+    io.to(roomId).emit('startTimers'); // Thêm sự kiện mới để báo client bắt đầu đếm thời gian
   });
 
-  // Handle disconnections
+  // Add to the socket.io event handlers
+  socket.on('readyToRestart', ({ roomId }) => {
+    // Kiểm tra nếu phòng tồn tại
+    if (!rooms.has(roomId)) return;
+    
+    const room = rooms.get(roomId);
+    
+    // Đánh dấu người chơi này là sẵn sàng
+    if (room.players[socket.id]) {
+      // Khởi tạo thuộc tính readyToRestart nếu nó không tồn tại
+      if (!room.readyToRestart) {
+        room.readyToRestart = {};
+      }
+      
+      room.readyToRestart[socket.id] = true;
+      
+      // Thông báo cho tất cả người chơi về việc người chơi này đã sẵn sàng
+      io.to(roomId).emit('playerReadyToRestart', { 
+        playerId: socket.id 
+      });
+      
+      // Kiểm tra nếu tất cả người chơi đã sẵn sàng
+      const allPlayers = Object.keys(room.players);
+      const readyPlayers = Object.keys(room.readyToRestart || {});
+      
+      if (allPlayers.length === 2 && allPlayers.every(id => readyPlayers.includes(id))) {
+        // Cả hai người chơi đều sẵn sàng, bắt đầu lại trò chơi
+        room.board = JSON.parse(JSON.stringify(initialBoardState));
+        room.currentTurn = 'red';
+        room.gameStarted = true;
+        room.timers = {
+          redTotal: 600,
+          blackTotal: 600,
+          redMove: 120,
+          blackMove: 120
+        };
+        // Xóa các cờ sẵn sàng
+        room.readyToRestart = {};
+        
+        // Thông báo cho tất cả người chơi rằng cả hai đều sẵn sàng và trò chơi đang khởi động lại
+        io.to(roomId).emit('bothPlayersReady');
+        io.to(roomId).emit('restartGame');
+        io.to(roomId).emit('updateTimers', room.timers);
+        io.to(roomId).emit('startTimers'); // Thêm sự kiện mới để báo client bắt đầu đếm thời gian
+      } else {
+        // Vẫn đang chờ người chơi kia
+        socket.emit('waitingForOpponent');
+      }
+    }
+  });
+
+  // Modify the disconnect handler to handle readyToRestart state
   socket.on('disconnect', () => {
     console.log(`User disconnected: ${socket.id}`);
     
@@ -234,6 +287,11 @@ io.on('connection', (socket) => {
         // Remove player from the room
         delete room.players[socket.id];
         
+        // Remove from readyToRestart if exists
+        if (room.readyToRestart && room.readyToRestart[socket.id]) {
+          delete room.readyToRestart[socket.id];
+        }
+        
         // If room is empty, delete it
         if (Object.keys(room.players).length === 0) {
           rooms.delete(roomId);
@@ -241,7 +299,7 @@ io.on('connection', (socket) => {
         } else {
           // Notify remaining player
           io.to(roomId).emit('playerDisconnected', {
-            message: 'Đối thủ đã ngắt kết nối'
+            message: 'Đối thủ đã rời phòng'
           });
           
           // Game is paused when a player disconnects
@@ -249,6 +307,162 @@ io.on('connection', (socket) => {
         }
       }
     }
+  });
+
+  socket.on('findRandomMatch', ({ preferredColor }) => {
+    console.log(`Player ${socket.id} looking for random match, preferred color: ${preferredColor}`);
+    
+    let match = null;
+    
+    // Logic ghép cặp người chơi
+    if (preferredColor === 'any') {
+      // Người chơi không có ưu tiên màu
+      
+      // Kiểm tra nếu có người đang chờ với màu cụ thể
+      if (waitingPlayers.red) {
+        match = {
+          player: waitingPlayers.red,
+          playerColor: 'red',
+          opponentColor: 'black'
+        };
+        waitingPlayers.red = null;
+      } else if (waitingPlayers.black) {
+        match = {
+          player: waitingPlayers.black,
+          playerColor: 'black',
+          opponentColor: 'red'
+        };
+        waitingPlayers.black = null;
+      } else if (waitingPlayers.any.length > 0) {
+        // Ghép với người chờ 'any' khác và chỉ định màu ngẫu nhiên
+        const opponent = waitingPlayers.any.shift();
+        const randomColor = Math.random() < 0.5 ? 'red' : 'black';
+        
+        match = {
+          player: opponent,
+          playerColor: randomColor === 'red' ? 'black' : 'red',
+          opponentColor: randomColor
+        };
+      } else {
+        // Không có ai đang chờ, thêm người chơi này vào hàng đợi
+        waitingPlayers.any.push(socket.id);
+        socket.emit('waitingForMatch');
+        return;
+      }
+    } else {
+      // Người chơi có ưu tiên màu cụ thể (red hoặc black)
+      const oppositeColor = preferredColor === 'red' ? 'black' : 'red';
+      
+      // Kiểm tra nếu có người đang chờ với màu ngược lại
+      if (waitingPlayers[oppositeColor]) {
+        match = {
+          player: waitingPlayers[oppositeColor],
+          playerColor: oppositeColor,
+          opponentColor: preferredColor
+        };
+        waitingPlayers[oppositeColor] = null;
+      } else if (waitingPlayers.any.length > 0) {
+        // Ghép với người chờ 'any'
+        const opponent = waitingPlayers.any.shift();
+        
+        match = {
+          player: opponent,
+          playerColor: oppositeColor,
+          opponentColor: preferredColor
+        };
+      } else {
+        // Không có ai đang chờ với màu phù hợp, thêm người chơi này vào hàng đợi
+        waitingPlayers[preferredColor] = socket.id;
+        socket.emit('waitingForMatch');
+        return;
+      }
+    }
+    
+    // Nếu tìm thấy đối thủ, tạo phòng và ghép nối họ
+    if (match) {
+      const roomId = uuidv4().substring(0, 8);
+      
+      // Khởi tạo phòng mới
+      rooms.set(roomId, {
+        players: {
+          [socket.id]: {
+            id: socket.id,
+            color: match.opponentColor,
+            ready: true
+          },
+          [match.player]: {
+            id: match.player,
+            color: match.playerColor,
+            ready: true
+          }
+        },
+        board: JSON.parse(JSON.stringify(initialBoardState)),
+        currentTurn: 'red',
+        gameStarted: true,
+        messages: [],
+        timers: {
+          redTotal: 600,
+          blackTotal: 600,
+          redMove: 120,
+          blackMove: 120
+        }
+      });
+      
+      // Thêm cả hai người chơi vào phòng
+      socket.join(roomId);
+      io.sockets.sockets.get(match.player)?.join(roomId);
+      
+      // Thông báo cho cả hai người chơi
+      socket.emit('matchFound', { roomId, color: match.opponentColor });
+      io.to(match.player).emit('matchFound', { roomId, color: match.playerColor });
+      
+      // Bắt đầu trò chơi
+      io.to(roomId).emit('gameStarted');
+      io.to(roomId).emit('startTimers');
+      
+      console.log(`Random match created: ${roomId}, Players: ${socket.id}(${match.opponentColor}) and ${match.player}(${match.playerColor})`);
+    }
+  });
+  
+  // Cập nhật hàm disconnect để xóa người chơi khỏi hàng đợi ghép cặp ngẫu nhiên
+  socket.on('disconnect', () => {
+    console.log(`User disconnected: ${socket.id}`);
+    
+    // Xóa người chơi khỏi hàng đợi ghép cặp
+    if (waitingPlayers.red === socket.id) {
+      waitingPlayers.red = null;
+    }
+    
+    if (waitingPlayers.black === socket.id) {
+      waitingPlayers.black = null;
+    }
+    
+    const anyIndex = waitingPlayers.any.indexOf(socket.id);
+    if (anyIndex !== -1) {
+      waitingPlayers.any.splice(anyIndex, 1);
+    }
+    
+    // Xử lý phòng (code hiện tại ở đây)
+    // ...
+  });
+  
+  // Thêm sự kiện hủy tìm trận
+  socket.on('cancelFindMatch', () => {
+    // Xóa người chơi khỏi tất cả các danh sách chờ
+    if (waitingPlayers.red === socket.id) {
+      waitingPlayers.red = null;
+    }
+    
+    if (waitingPlayers.black === socket.id) {
+      waitingPlayers.black = null;
+    }
+    
+    const anyIndex = waitingPlayers.any.indexOf(socket.id);
+    if (anyIndex !== -1) {
+      waitingPlayers.any.splice(anyIndex, 1);
+    }
+    
+    socket.emit('matchCancelled');
   });
 });
 

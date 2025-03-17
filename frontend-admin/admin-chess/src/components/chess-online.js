@@ -884,7 +884,7 @@ useEffect(() => {
                         {isSearchingMatch ? (
                           <div className="flex flex-col items-center gap-2 p-4  rounded-lg">
                             <EarthGlobeSpinner />
-                            <span className="bg-gray-300 animate-pulse">Đang tìm đối thủ...</span>
+                            <span className="bg-gray-300 animate-pulse">{language === "en" ? "Looking for opponents..." : "Đang tìm đối thủ..."}</span>
                             <button
                               onClick={cancelFindMatch}
                               className="px-6 py-2 mt-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600"
@@ -898,13 +898,13 @@ useEffect(() => {
                               onClick={() => findRandomMatch('red')}
                               className="px-10 py-3 bg-gray-300 text-black rounded-lg shadow-md hover:bg-red-700"
                             >
-                              Ghép ngẫu nhiên (Quân Đỏ)
+                              {language === "en" ? "Random Match (Red Army)" : "Ghép ngẫu nhiên (Quân Đỏ)"}
                             </button>
                             <button
                               onClick={() => findRandomMatch('black')}
                               className="px-10 py-3 bg-gray-300 text-black rounded-lg shadow-md hover:bg-gray-500"
                             >
-                              Ghép ngẫu nhiên (Quân Đen)
+                              {language === "en" ? "Random Match (Red Army)" : "Ghép ngẫu nhiên (Quân Đen)"}
                             </button>
                             <button
                               onClick={() => findRandomMatch('any')}
