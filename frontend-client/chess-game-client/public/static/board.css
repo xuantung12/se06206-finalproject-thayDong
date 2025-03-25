@@ -1,0 +1,226 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #f4f4f4;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+nav {
+    margin: 10px auto;
+    width: 990px;
+    height: 30px;
+    text-align: center;
+}
+
+nav ul {
+    padding: 0;
+}
+
+nav ul li {
+    list-style: none;
+    display: inline-block;
+    margin: 0 10px;
+}
+
+nav a {
+    padding: 5px 15px;
+    font-size: 1.2em;
+    text-decoration: none;
+    color: #000;
+    background-color: #ffffff;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+nav a:hover {
+    background-color: #4CAF50;
+    color: white;
+}
+
+/* ----- Bố cục chính ----- */
+#game {
+    width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+}
+
+/* ----- Bàn cờ ----- */
+#board {
+    background: url("board.svg");
+    background-size: 500px 550px;
+    height: 550px;
+    width: 500px;
+    float: right;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+/* ----- Khu vực điều khiển ----- */
+#controls {
+    width: 250px;
+    padding-right: 20px;
+}
+
+.shadow {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+/* ----- Thông tin người chơi ----- */
+.player_info {
+    width: 100%;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.player_header {
+    width: 100%;
+    height: 50px;
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
+}
+
+.player_name {
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.player_elo {
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+}
+
+/* ----- Lượt chơi ----- */
+#turn {
+    height: 80px;
+    font-size: 1.5em;
+    text-align: center;
+    width: 100%;
+    line-height: 80px;
+    background-color: #ffeb3b;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+/* ----- Đồng hồ chơi ----- */
+.clock {
+
+    width: 100px;
+    text-align: center;
+    line-height: 50px;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 5px;
+    background: #ddd;
+}
+
+#record {
+    height: 300px;
+    width: 100%;
+    background-color: #eeeeff;
+    overflow: auto;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+#record table {
+    width: 100%;
+    font-size: 1em;
+}
+
+.record_dark {
+    background-color: #ccc;
+}
+
+/* ----- Quân cờ và ô bàn cờ ----- */
+.board_space {
+    width: 33px;
+    height: 29px;
+    padding: 5px;
+    float: right;
+    margin: 13px 11px;
+    position: relative; /* Tạo bối cảnh cho phần tử con */
+    z-index: 10; /* Đảm bảo .board_space nằm trên */
+}
+
+.occupied:hover {
+    background-color: rgba(0, 0, 255, .7);
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.valid_move {
+    background-color: rgb(143 0 0 / 83%);
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.valid_move:hover {
+    background-color: rgb(255, 247, 0);
+    
+}
+
+.selected {
+    background-color: rgba(100, 100, 255, .9);
+    border-radius: 5px;
+}
+
+.board_space img{
+    width: 44px;
+    height: 44px;
+
+    position: absolute; /* Căn chỉnh tương đối với .board_space */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Dịch chuyển về tâm */
+    z-index: 5; /* Z-index thấp hơn .board_space */
+}
+
+.captured img {
+	margin: 2px 4px;
+}
+
+#winner-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 42px;
+    color: red;
+    background: rgba(0, 0, 0, 0.8);
+
+    border-radius: 10px;
+    text-align: center;
+    z-index: 999;
+}
+
+.winner-hidden {
+    display: none;
+}
+
+/* Làm sáng quân cờ đối phương */
+.highlight_capture {
+    box-shadow: 0 0 10px 4px rgba(255, 0, 0, 0.7); /* Hiệu ứng sáng với màu đỏ */
+    z-index: 2; /* Đảm bảo lớp overlay nằm trên quân cờ */
+}
+
+
+/* Làm sáng các ô có thể ăn quân */
+.capture_move {
+    background-color: rgba(255, 0, 0, 0.5); /* Màu đỏ cho ô có thể ăn quân */
+}

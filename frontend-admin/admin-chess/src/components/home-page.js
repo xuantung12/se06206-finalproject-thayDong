@@ -1,5 +1,17 @@
-import { useState } from "react";
-import { FaGamepad, FaPuzzlePiece, FaBook, FaTv, FaCommentDots, FaSun, FaMoon, FaGlobe, FaSignInAlt } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  FaGamepad,
+  FaPuzzlePiece,
+  FaBook,
+  FaTv,
+  FaCommentDots,
+  FaSun,
+  FaMoon,
+  FaGlobe,
+  FaSignOutAlt,
+  FaSignInAlt
+} from "react-icons/fa";
 
 
 export default function HomePage() {
@@ -7,7 +19,43 @@ export default function HomePage() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [playMenuOpen, setPlayMenuOpen] = useState(false);
   const [keepOpen, setKeepOpen] = useState(false);
-  const [language, setLanguage] = useState("en"); // Trạng thái ngôn ngữ
+  const [language, setLanguage] = useState("en");
+  const [user, setUser] = useState(null);
+
+
+ 
+  useEffect(() => {
+    // Gọi API lấy user từ session
+    axios.get("http://localhost:3001/session-user", { withCredentials: true })
+      .then(response => {
+        setUser(response.data.user);
+      })
+      .catch(() => {
+        setUser(null); // Không có session -> user chưa đăng nhập
+      });
+
+
+    // Lấy trạng thái dark mode từ localStorage
+    setDarkMode(localStorage.getItem("darkMode") === "true");
+  }, []);
+
+
+  const handleLogout = () => {
+    axios.post("http://localhost:3001/logout", {}, { withCredentials: true })
+      .then(() => {
+        setUser(null);
+      })
+      .catch(error => {
+        console.error("Lỗi đăng xuất:", error);
+      });
+  };
+
+
+  const toggleDarkMode = () => {
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    localStorage.setItem("darkMode", newMode);
+  };
 
 
   return (
@@ -55,9 +103,9 @@ export default function HomePage() {
               }, 200);
             }}
           >
-          <MenuItem icon={<FaGamepad />} text={language === "en" ? "Play Now" : "Chơi Ngay"} isExpanded={isExpanded} link="home-page" />
+          <MenuItem icon={<FaGamepad />} text={language === "en" ? "Play Now" : "Chơi Ngay"} isExpanded={isExpanded} link="/home-page" />
           </div>
-          <MenuItem icon={<FaPuzzlePiece />} text={language === "en" ? "Puzzles" : "Câu đố"} isExpanded={isExpanded} link="/chess-courses" />
+          <MenuItem icon={<FaPuzzlePiece />} text={language === "en" ? "Puzzles" : "Câu đố"} isExpanded={isExpanded} link="/chess-puzzle" />
           <MenuItem icon={<FaBook />} text={language === "en" ? "Course" : "Khóa Học"} isExpanded={isExpanded} link="/chess-courses" />
           <MenuItem icon={<FaCommentDots />} text={language === "en" ? "Chat" : "Trò chuyện"} isExpanded={isExpanded} link="/chess-chat" />
         </nav>
@@ -65,21 +113,34 @@ export default function HomePage() {
 
         {/* Other Options */}
         <div className="mt-auto space-y-3 w-full mb-5">
-          <button
-            className="flex items-center space-x-2 w-full p-2 hover:bg-orange-700 rounded"
-            onClick={() => setLanguage(language === "en" ? "vi" : "en")}
-          >
+          <button className="flex items-center space-x-2 w-full p-2 hover:bg-orange-700 rounded" onClick={() => setLanguage(language === "en" ? "vi" : "en")}>
             <FaGlobe />
             {isExpanded && <span>{language === "en" ? "English" : "Tiếng Việt"}</span>}
           </button>
-          <button
-            className="flex items-center space-x-2 w-full p-2 hover:bg-orange-900 rounded"
-            onClick={() => setDarkMode(!darkMode)}
-          >
+          <button className="flex items-center space-x-2 w-full p-2 hover:bg-orange-700 rounded" onClick={toggleDarkMode}>
             {darkMode ? <FaSun /> : <FaMoon />}
             {isExpanded && <span>{darkMode ? (language === "en" ? "Light Mode" : "Chế độ sáng") : (language === "en" ? "Dark Mode" : "Chế độ tối")}</span>}
           </button>
-          <MenuItem icon={<FaSignInAlt />} text={language === "en" ? "Sign In" : "Đăng nhập"} isExpanded={isExpanded} link="/chess-login" />
+
+
+          {/* Hiển thị avatar nếu đã đăng nhập */}
+          {user ? (
+            <div className="relative w-full flex flex-col items-center">
+              <button className="flex items-center space-x-2 w-full p-2 hover:bg-orange-700 rounded">
+                <img src={user.avatar} alt="Avatar" className="w-10 h-10 rounded-full border-2 border-white" />
+                {isExpanded && <span>{user.username}</span>}
+              </button>
+              {/* Nút Sign Out ngay dưới avatar */}
+              <button
+                className="mt-2 w-full flex items-center justify-center bg-red-600 text-white py-2 rounded hover:bg-red-700 transition"
+                onClick={handleLogout}
+              >
+                <FaSignOutAlt className="mr-2" /> {isExpanded ? (language === "en" ? "Sign Out" : "Đăng xuất") : ""}
+              </button>
+            </div>
+          ) : (
+            <MenuItem icon={<FaSignInAlt />} text={language === "en" ? "Sign In" : "Đăng nhập"} isExpanded={isExpanded} link="/chess-login" />
+          )}
         </div>
       </aside>
 
@@ -97,16 +158,24 @@ export default function HomePage() {
             setIsExpanded(false);
           }}
         >
-          <a href="/chess-offline" className="block p-3 hover:bg-gray-200">{language === "en" ? "Play vs Computer" : "Chơi với máy"}</a>
-          <a href="/chess-online" className="block p-3 hover:bg-gray-200">{language === "en" ? "Play Online" : "Chơi Online"}</a>
-          <a href="/option3" className="block p-3 hover:bg-gray-200">{language === "en" ? "Custom 3" : "Tùy chỉnh 3"}</a>
-          <a href="/option4" className="block p-3 hover:bg-gray-200">{language === "en" ? "Custom 4" : "Tùy chỉnh 4"}</a>
+          <a href="/chess-offline" className="block p-3 hover:bg-gray-200"><img src="images/play-computer-sm.svg"></img> {language === "en" ? "Play vs Computer" : "Chơi với máy"}</a>
+              <a href="/chess-online" className="block p-3 hover:bg-gray-200"><img src="images/challenge-friends.svg"></img>{language === "en" ? "Play Online" : "Chơi trực tuyến"}</a>
+              <a href="/option3" className="block p-3 hover:bg-gray-200">{language === "en" ? "Custom 3" : "Tùy chỉnh 3"}</a>
+              <a href="/option4" className="block p-3 hover:bg-gray-200">{language === "en" ? "Custom 4" : "Tùy chỉnh 4"}</a>
         </div>
       )}
 
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center p-10">
+        <div className=" w-[100%] h-auto absolute bottom-0 left-0 size-16 pointer-events-none">
+          <img src="images/96857e5411a903ed226e3c87e54cc29c (1).svg" alt="Ảnh mẫu"
+          class="w-[100%] h-auto"></img>
+        </div>
+        <div className=" w-[100%] h-auto absolute bottom-0 left-0 size-16 pointer-events-none">
+          <img src="/images/sonha.svg" alt="Ảnh mẫu"
+          class="w-[100%] h-auto"></img>
+        </div>
         <h2 className="text-3xl font-bold mb-5">
           <a href="/" className="text-orange-900 hover:underline">{language === "en" ? "Welcome to CoTuong.com!" : "Chào mừng đến với CoTuong.com!"}</a>
         </h2>
@@ -123,10 +192,9 @@ export default function HomePage() {
 }
 
 
-// Component cho menu item trong sidebar
-function MenuItem({ icon, text, isExpanded, link, onClick }) {
+function MenuItem({ icon, text, isExpanded, link }) {
   return (
-    <a href={link} onClick={onClick} className="flex items-center space-x-2 w-full p-2 hover:bg-orange-700 rounded">
+    <a href={link} className="flex items-center space-x-2 w-full p-2 hover:bg-orange-700 rounded">
       <span className="text-xl">{icon}</span>
       {isExpanded && <span>{text}</span>}
     </a>
@@ -134,7 +202,6 @@ function MenuItem({ icon, text, isExpanded, link, onClick }) {
 }
 
 
-// Component cho các nút trong trang chính
 function MainButton({ icon, title, subtitle, link }) {
   return (
     <a href={link} className="flex items-center space-x-4 w-full border border-orange-900 p-4 rounded-lg hover:bg-red-100">
