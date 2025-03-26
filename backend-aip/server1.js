@@ -15,14 +15,30 @@ const server = http.createServer(app);
 // ✅ Cấu hình Socket.IO để cho phép nhiều client từ các port khác nhau
 const io = new Server(server, {
     cors: { 
-        origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002"], 
+        origin: 
+        ["http://localhost:3000",
+        "http://localhost:3001", 
+        "http://localhost:3002",
+        "http://150.95.113.55", 
+        "http://www.150.95.113.55", 
+        "https://150.95.113.55", 
+        "https://www.150.95.113.55" 
+        ], 
         credentials: true 
     },
 });
 
 // ✅ Cấu hình CORS cho phép nhiều client
 app.use(cors({ 
-    origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002"], 
+    origin: 
+        ["http://localhost:3000",
+        "http://localhost:3001", 
+        "http://localhost:3002",
+        "http://150.95.113.55", 
+        "http://www.150.95.113.55", 
+        "https://150.95.113.55", 
+        "https://www.150.95.113.55" 
+        ], 
     credentials: true 
 }));
 app.use(express.json());
@@ -49,11 +65,16 @@ const sessionStore = new MySQLStore({}, db);
 
 app.use(session({
     key: "session_cookie",
-    secret: process.env.SESSION_SECRET || "mysecretkey",
+    secret: process.env.SESSION_SECRET || "strong_secret_key_here",
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, httpOnly: true, sameSite: "lax" }
+    cookie: { 
+        secure: true, // Bắt buộc sử dụng HTTPS
+        httpOnly: true, 
+        sameSite: 'none', // Cho phép chia sẻ cookie giữa các trang
+        maxAge: 24 * 60 * 60 * 1000 // Thời gian sống của phiên (24 giờ)
+    }
 }));
 
 // ✅ Danh sách avatar mặc định

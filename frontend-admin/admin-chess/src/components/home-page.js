@@ -158,8 +158,8 @@ export default function HomePage() {
             setIsExpanded(false);
           }}
         >
-          <a href="/chess-offline" className="block p-3 hover:bg-gray-200"><img src="images/play-computer-sm.svg"></img> {language === "en" ? "Play vs Computer" : "Chơi với máy"}</a>
-              <a href="/chess-online" className="block p-3 hover:bg-gray-200"><img src="images/challenge-friends.svg"></img>{language === "en" ? "Play Online" : "Chơi trực tuyến"}</a>
+          <a href="/chess-offline" className="block p-3 hover:bg-gray-200"><img src="images/play-computer-sm.svg" alt="nguoi may"></img> {language === "en" ? "Play vs Computer" : "Chơi với máy"}</a>
+              <a href="/chess-online" className="block p-3 hover:bg-gray-200"><img src="images/challenge-friends.svg" alt="2 nguoi choi"></img>{language === "en" ? "Play Online" : "Chơi trực tuyến"}</a>
               <a href="/option3" className="block p-3 hover:bg-gray-200">{language === "en" ? "Custom 3" : "Tùy chỉnh 3"}</a>
               <a href="/option4" className="block p-3 hover:bg-gray-200">{language === "en" ? "Custom 4" : "Tùy chỉnh 4"}</a>
         </div>

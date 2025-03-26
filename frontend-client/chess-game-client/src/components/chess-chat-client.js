@@ -9,7 +9,6 @@ import {
   FaCommentDots,
   FaSun,
   FaMoon,
-  FaChess,
   FaGlobe,
   FaSignOutAlt,
   FaSignInAlt
@@ -17,7 +16,7 @@ import {
 import io from "socket.io-client";
 
 
-const socket = io("http://localhost:3001");
+const socket = io("http://150.95.113.55");
 
 
 const MenuItem = ({ icon, text, isExpanded, link }) => (
@@ -42,14 +41,8 @@ export default function ChessChat() {
 
 
 
-
- 
-
-
-
-
   useEffect(() => {
-    axios.get("http://localhost:3001/users")
+    axios.get("http://150.95.113.55/users")
       .then(res => setUsersList(res.data))
       .catch(err => console.error("❌ Lỗi lấy danh sách người dùng:", err));
  
@@ -69,12 +62,12 @@ export default function ChessChat() {
 
 
   useEffect(() => {
-    axios.get("http://localhost:3001/session-user", { withCredentials: true })
+    axios.get("http://150.95.113.55/session-user", { withCredentials: true })
       .then(res => setUser(res.data.user))
       .catch(() => setUser(null));
 
 
-    axios.get("http://localhost:3001/messages")
+    axios.get("http://150.95.113.55/messages")
       .then(res => setMessages(res.data));
 
 
@@ -84,7 +77,7 @@ export default function ChessChat() {
 
 
     // Lấy danh sách tài khoản đăng ký
-    axios.get("http://localhost:3001/users")
+    axios.get("http://150.95.113.55/users")
       .then(res => setUsersList(res.data))
       .catch(err => console.error("❌ Lỗi lấy danh sách người dùng:", err));
 
@@ -113,14 +106,14 @@ export default function ChessChat() {
     };
 
 
-    axios.post("http://localhost:3001/messages", newMessage)
+    axios.post("http://150.95.113.55/messages", newMessage)
       .then(() => setInput(""))
       .catch(err => console.error("❌ Lỗi gửi tin nhắn:", err));
   };
 
 
   const handleLogout = () => {
-    axios.post("http://localhost:3001/logout", {}, { withCredentials: true })
+    axios.post("http://150.95.113.55/logout", {}, { withCredentials: true })
       .then(() => {
         setUser(null);
         window.location.reload();

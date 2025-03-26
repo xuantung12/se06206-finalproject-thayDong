@@ -6,13 +6,17 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: 'http://150.95.113.55', // Your server's domain/IP
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json({ limit: '5mb' })); // Increased limit for larger JSON payloads
 app.use('/uploads', express.static('uploads'));
 
 // MySQL connection
 const db = mysql.createConnection({
-    host: 'localhost',
+    host: '150.95.113.55',
     user: 'root',
     password: '',
     database: 'chess_db'
@@ -331,4 +335,4 @@ app.delete('/uploads/:id', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server đang chạy tại http://localhost:${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`Server running on http://0.0.0.0:${PORT}`));
