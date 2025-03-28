@@ -15,9 +15,8 @@ import {
   FaSignInAlt
 } from "react-icons/fa";
 
-
+// Cập nhật URL API để trỏ đến địa chỉ IP của máy chủ cloud
 const API_URL = "http://150.95.113.55:5000/courses";
-
 
 const translations = {
   en: {
@@ -46,9 +45,6 @@ const translations = {
   }
 };
 
-
-
-
 function ChessCourses() {
   const [courses, setCourses] = useState([]);
   const [name, setName] = useState("");
@@ -63,28 +59,25 @@ function ChessCourses() {
   const [darkMode, setDarkMode] = useState(false);
   const [user, setUser] = useState(null);
 
-
   useEffect(() => {
     fetchCourses();
   }, []);
 
-
   const fetchCourses = async () => {
     try {
-      const response = await axios.get(API_URL);
+      // Cập nhật URL API
+      const response = await axios.get("http://150.95.113.55:5000/courses");
       setCourses(response.data);
     } catch (error) {
       console.error("Lỗi lấy dữ liệu:", error);
     }
   };
 
-
   const handleEdit = (course) => {
     setEditId(course.id);
     setName(course.name);
     setDescription(course.description);
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -94,14 +87,15 @@ function ChessCourses() {
     if (image1) formData.append("image1", image1);
     if (image2) formData.append("image2", image2);
 
-
     try {
       if (editId) {
-        await axios.put(`${API_URL}/${editId}`, formData, {
+        // Cập nhật URL API
+        await axios.put(`http://150.95.113.55:5000/courses/${editId}`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       } else {
-        await axios.post(API_URL, formData, {
+        // Cập nhật URL API
+        await axios.post("http://150.95.113.55:5000/courses", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       }
@@ -112,16 +106,15 @@ function ChessCourses() {
     }
   };
 
-
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API_URL}/${id}`);
+      // Cập nhật URL API
+      await axios.delete(`http://150.95.113.55:5000/courses/${id}`);
       fetchCourses();
     } catch (error) {
       console.error("Lỗi xóa dữ liệu:", error);
     }
   };
-
 
   const resetForm = () => {
     setName("");
@@ -131,24 +124,21 @@ function ChessCourses() {
     setEditId(null);
   };
 
-
   useEffect(() => {
-    // Gọi API lấy user từ session
+    // Cập nhật URL API
     axios.get("http://150.95.113.55:3001/session-user", { withCredentials: true })
       .then(response => {
         setUser(response.data.user);
       })
       .catch(() => {
-        setUser(null); // Không có session -> user chưa đăng nhập
+        setUser(null);
       });
 
-
-    // Lấy trạng thái dark mode từ localStorage
     setDarkMode(localStorage.getItem("darkMode") === "true");
   }, []);
 
-
   const handleLogout = () => {
+    // Cập nhật URL API
     axios.post("http://150.95.113.55:3001/logout", {}, { withCredentials: true })
       .then(() => {
         setUser(null);
@@ -158,12 +148,12 @@ function ChessCourses() {
       });
   };
 
-
   const toggleDarkMode = () => {
     const newMode = !darkMode;
     setDarkMode(newMode);
     localStorage.setItem("darkMode", newMode);
   };
+
 
 
  
