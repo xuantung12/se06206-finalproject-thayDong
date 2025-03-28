@@ -16,7 +16,7 @@ import {
 import io from "socket.io-client";
 
 
-const socket = io("http://150.95.113.55");
+const socket = io("http://150.95.113.55:3001");
 
 
 const MenuItem = ({ icon, text, isExpanded, link }) => (
