@@ -70,7 +70,7 @@ const ChessPuzzle = ({ gameId }) => {
 
   useEffect(() => {
     // Gọi API lấy user từ session
-    axios.get("http://150.95.113.55:3001/session-user", { withCredentials: true })
+    axios.get("http://localhost:3001/session-user", { withCredentials: true })
       .then(response => {
         setUser(response.data.user);
       })
@@ -85,7 +85,7 @@ const ChessPuzzle = ({ gameId }) => {
 
 
   const handleLogout = () => {
-    axios.post("http://150.95.113.55:3001/logout", {}, { withCredentials: true })
+    axios.post("http://localhost:3001/logout", {}, { withCredentials: true })
       .then(() => {
         setUser(null);
       })
@@ -115,7 +115,7 @@ const ChessPuzzle = ({ gameId }) => {
     // Load game if gameId is provided
   useEffect(() => {
     if (gameId) {
-      axios.get(`http://150.95.113.55:5000/game/${gameId}`)
+      axios.get(`http://localhost:5000/game/${gameId}`)
         .then(response => {
           setBoard(JSON.parse(response.data.board_state));
           setCurrentTurn(response.data.current_turn);
@@ -129,7 +129,7 @@ const ChessPuzzle = ({ gameId }) => {
   }, [gameId]);
 
   const fetchSavedGames = () => {
-    axios.get("http://150.95.113.55:5000/games")
+    axios.get("http://localhost:5000/games")
       .then(response => {
         setSavedGames(response.data);
       })
@@ -138,7 +138,7 @@ const ChessPuzzle = ({ gameId }) => {
 
 
   const loadGame = (id) => {
-    axios.get(`http://150.95.113.55:5000/game/${id}`)
+    axios.get(`http://localhost:5000/game/${id}`)
       .then(response => {
         setBoard(JSON.parse(response.data.board_state));
         setCurrentTurn("red"); // Always set to red when loading a game

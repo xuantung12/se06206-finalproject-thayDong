@@ -12,28 +12,17 @@ app.use('/uploads', express.static('uploads'));
 
 // MySQL connection
 const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: 3306, // Explicitly set MySQL default port
-    connectTimeout: 10000, // 10 seconds
-    acquireTimeout: 10000, // 10 seconds
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'chess_db'
 });
 
 db.connect(err => {
     if (err) {
         console.error("Database connection failed:", err);
-        // Additional detailed error logging
-        console.error("Connection Details:");
-        console.error("Host:", process.env.DB_HOST);
-        console.error("User:", process.env.DB_USER);
-        console.error("Database:", process.env.DB_NAME);
     } else {
-        console.log("Connected to MySQL successfully");
+        console.log("Connected to MySQL");
 
         // Create chess_games table if it doesn't exist
         const createChessTableQuery = `

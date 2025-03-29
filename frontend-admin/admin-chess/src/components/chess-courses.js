@@ -9,14 +9,14 @@ import {
   FaCommentDots,
   FaSun,
   FaMoon,
-  FaChess,
   FaGlobe,
   FaSignOutAlt,
   FaSignInAlt
 } from "react-icons/fa";
 
-// Cập nhật URL API để trỏ đến địa chỉ IP của máy chủ cloud
-const API_URL = "http://150.95.113.55:5000/courses";
+
+const API_URL = "http://localhost:5000/courses";
+
 
 const translations = {
   en: {
@@ -45,6 +45,9 @@ const translations = {
   }
 };
 
+
+
+
 function ChessCourses() {
   const [courses, setCourses] = useState([]);
   const [name, setName] = useState("");
@@ -59,25 +62,28 @@ function ChessCourses() {
   const [darkMode, setDarkMode] = useState(false);
   const [user, setUser] = useState(null);
 
+
   useEffect(() => {
     fetchCourses();
   }, []);
 
+
   const fetchCourses = async () => {
     try {
-      // Cập nhật URL API
-      const response = await axios.get("http://150.95.113.55:5000/courses");
+      const response = await axios.get(API_URL);
       setCourses(response.data);
     } catch (error) {
       console.error("Lỗi lấy dữ liệu:", error);
     }
   };
 
+
   const handleEdit = (course) => {
     setEditId(course.id);
     setName(course.name);
     setDescription(course.description);
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -87,15 +93,14 @@ function ChessCourses() {
     if (image1) formData.append("image1", image1);
     if (image2) formData.append("image2", image2);
 
+
     try {
       if (editId) {
-        // Cập nhật URL API
-        await axios.put(`http://150.95.113.55:5000/courses/${editId}`, formData, {
+        await axios.put(`${API_URL}/${editId}`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       } else {
-        // Cập nhật URL API
-        await axios.post("http://150.95.113.55:5000/courses", formData, {
+        await axios.post(API_URL, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       }
@@ -106,15 +111,16 @@ function ChessCourses() {
     }
   };
 
+
   const handleDelete = async (id) => {
     try {
-      // Cập nhật URL API
-      await axios.delete(`http://150.95.113.55:5000/courses/${id}`);
+      await axios.delete(`${API_URL}/${id}`);
       fetchCourses();
     } catch (error) {
       console.error("Lỗi xóa dữ liệu:", error);
     }
   };
+
 
   const resetForm = () => {
     setName("");
@@ -124,22 +130,25 @@ function ChessCourses() {
     setEditId(null);
   };
 
+
   useEffect(() => {
-    // Cập nhật URL API
-    axios.get("http://150.95.113.55:3001/session-user", { withCredentials: true })
+    // Gọi API lấy user từ session
+    axios.get("http://localhost:3001/session-user", { withCredentials: true })
       .then(response => {
         setUser(response.data.user);
       })
       .catch(() => {
-        setUser(null);
+        setUser(null); // Không có session -> user chưa đăng nhập
       });
 
+
+    // Lấy trạng thái dark mode từ localStorage
     setDarkMode(localStorage.getItem("darkMode") === "true");
   }, []);
 
+
   const handleLogout = () => {
-    // Cập nhật URL API
-    axios.post("http://150.95.113.55:3001/logout", {}, { withCredentials: true })
+    axios.post("http://localhost:3001/logout", {}, { withCredentials: true })
       .then(() => {
         setUser(null);
       })
@@ -147,6 +156,7 @@ function ChessCourses() {
         console.error("Lỗi đăng xuất:", error);
       });
   };
+
 
   const toggleDarkMode = () => {
     const newMode = !darkMode;

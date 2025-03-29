@@ -37,8 +37,7 @@ const Register = () => {
 
 
     try {
-      // Registration API call
-      const response = await fetch("http://150.95.113.55/register", {
+      const response = await fetch("http://localhost:3001/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -53,8 +52,8 @@ const Register = () => {
         setMessage("✅ Đăng ký thành công! Đang đăng nhập...");
 
 
-        // Login after registration API call
-        const loginResponse = await fetch("http://150.95.113.55/login", {
+        // Tự động đăng nhập sau khi đăng ký
+        const loginResponse = await fetch("http://localhost:3001/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",

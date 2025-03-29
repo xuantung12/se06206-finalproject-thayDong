@@ -18,7 +18,7 @@ const ChessLogin = () => {
   useEffect(() => {
     const fetchSessionUser = async () => {
       try {
-        const response = await fetch("http://150.95.113.55/session-user", {
+        const response = await fetch("http://localhost:3001/session-user", {
           credentials: "include",
         });
 
@@ -66,13 +66,13 @@ const ChessLogin = () => {
 
 
     try {
-      const response = await fetch("http://150.95.113.55/login", {
+      const response = await fetch("http://localhost:3001/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify(formData),
       });
-      
+
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -191,7 +191,7 @@ const ChessLogin = () => {
             onClick={async () => {
               setLoading(true);
               try {
-                await fetch("http://150.95.113.55/logout", {
+                await fetch("http://localhost:3001/logout", {
                   method: "POST",
                   credentials: "include",
                 });
