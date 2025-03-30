@@ -26,7 +26,7 @@ export default function HomePage() {
  
   useEffect(() => {
     // Gọi API lấy user từ session
-    axios.get("http://localhost:3001/session-user", { withCredentials: true })
+    axios.get("http://150.95.113.55:3001/session-user", { withCredentials: true })
       .then(response => {
         setUser(response.data.user);
       })
@@ -41,7 +41,7 @@ export default function HomePage() {
 
 
   const handleLogout = () => {
-    axios.post("http://localhost:3001/logout", {}, { withCredentials: true })
+    axios.post("http://150.95.113.55:3001/logout", {}, { withCredentials: true })
       .then(() => {
         setUser(null);
       })
@@ -158,8 +158,8 @@ export default function HomePage() {
             setIsExpanded(false);
           }}
         >
-          <a href="/chess-offline-client" className="block p-3 hover:bg-gray-200"><img src="images/play-computer-sm.svg"></img> {language === "en" ? "Play vs Computer" : "Chơi với máy"}</a>
-              <a href="/chess-online-client" className="block p-3 hover:bg-gray-200"><img src="images/challenge-friends.svg"></img>{language === "en" ? "Play Online" : "Chơi trực tuyến"}</a>
+          <a href="/chess-offline-client" className="block p-3 hover:bg-gray-200"><img src="images/play-computer-sm.svg" alt=""></img> {language === "en" ? "Play vs Computer" : "Chơi với máy"}</a>
+              <a href="/chess-online-client" className="block p-3 hover:bg-gray-200"><img src="images/challenge-friends.svg" alt=""></img>{language === "en" ? "Play Online" : "Chơi trực tuyến"}</a>
               <a href="/option3" className="block p-3 hover:bg-gray-200">{language === "en" ? "Custom 3" : "Tùy chỉnh 3"}</a>
               <a href="/option4" className="block p-3 hover:bg-gray-200">{language === "en" ? "Custom 4" : "Tùy chỉnh 4"}</a>
         </div>
