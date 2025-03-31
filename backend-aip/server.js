@@ -14,8 +14,8 @@ const io = new Server(server, {
   cors: {
     origin: [
       'http://localhost:3000',  // Local development
-      'http://150.95.113.55',   // Your cloud server domain
-      'https://150.95.113.55'   // HTTPS version of your domain
+      'http://150.95.111.7',   // Your cloud server domain
+      'https://150.95.111.7'   // HTTPS version of your domain
     ],
     methods: ['GET', 'POST']
   }

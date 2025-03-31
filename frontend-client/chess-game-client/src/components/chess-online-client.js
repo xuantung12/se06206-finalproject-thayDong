@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 import EarthGlobeSpinner from "./chess-earth-client";
 import { FaGamepad, FaPuzzlePiece, FaBook, FaCommentDots, FaSun, FaMoon, FaGlobe, FaSignInAlt } from "react-icons/fa";
 
-const socket = io("http://150.95.113.55:4000", {
+const socket = io("http://150.95.111.7:4000", {
   withCredentials: false,
   extraHeaders: {
     "my-custom-header": "abcd"

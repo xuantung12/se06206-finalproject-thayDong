@@ -15,7 +15,7 @@ import {
 } from "react-icons/fa";
 
 
-const API_URL = "http://localhost:5000/courses";
+const API_URL = "http://150.95.111.7:5000/courses";
 
 
 const translations = {
@@ -133,7 +133,7 @@ function ChessCourses() {
 
   useEffect(() => {
     // Gọi API lấy user từ session
-    axios.get("http://localhost:3001/session-user", { withCredentials: true })
+    axios.get("http://150.95.111.7:3001/session-user", { withCredentials: true })
       .then(response => {
         setUser(response.data.user);
       })
@@ -148,7 +148,7 @@ function ChessCourses() {
 
 
   const handleLogout = () => {
-    axios.post("http://localhost:3001/logout", {}, { withCredentials: true })
+    axios.post("http://150.95.111.7:3001/logout", {}, { withCredentials: true })
       .then(() => {
         setUser(null);
       })
@@ -327,8 +327,8 @@ function ChessCourses() {
             <div key={course.id} className="bg-orange-100 p-4 rounded-lg shadow-md flex items-center gap-4 text-lg transition duration-300 hover:shadow-lg hover:bg-orange-200">
          
               <div className="flex flex-col gap-2 w-1/3">
-                <img src={`http://localhost:5000/uploads/${course.image1}`} alt="Ảnh 1" className="w-full h-32 object-cover rounded-lg" />
-                <img src={`http://localhost:5000/uploads/${course.image2}`} alt="Ảnh 2" className="w-full h-32 object-cover rounded-lg" />
+                <img src={`http://150.95.111.7:5000/uploads/${course.image1}`} alt="Ảnh 1" className="w-full h-32 object-cover rounded-lg" />
+                <img src={`http://150.95.111.7:5000/uploads/${course.image2}`} alt="Ảnh 2" className="w-full h-32 object-cover rounded-lg" />
               </div>
               <div className="ml-4 flex-1">
                 <h3 className="font-bold text-lg">
