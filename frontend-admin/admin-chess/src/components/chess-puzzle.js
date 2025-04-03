@@ -67,7 +67,7 @@ const ChessPuzzle = ({ gameId }) => {
 
   useEffect(() => {
     // Gọi API lấy user từ session
-    axios.get("http://localhost:3001/session-user", { withCredentials: true })
+    axios.get("http://150.95.111.7:3001/session-user", { withCredentials: true })
       .then(response => {
         setUser(response.data.user);
       })
@@ -82,7 +82,7 @@ const ChessPuzzle = ({ gameId }) => {
 
 
   const handleLogout = () => {
-    axios.post("http://localhost:3001/logout", {}, { withCredentials: true })
+    axios.post("http://150.95.111.7:3001/logout", {}, { withCredentials: true })
       .then(() => {
         setUser(null);
       })
@@ -101,7 +101,7 @@ const ChessPuzzle = ({ gameId }) => {
 
 
     useEffect(() => {
-        axios.get("http://localhost:5000/games")
+        axios.get("http://150.95.111.7:5000/games")
         .then(response => setGames(response.data))
         .catch(error => console.error("Lỗi khi tải danh sách ván cờ:", error));
     }, []);
@@ -110,7 +110,7 @@ const ChessPuzzle = ({ gameId }) => {
   // Load game if gameId is provided
   useEffect(() => {
     if (gameId) {
-      axios.get(`http://localhost:5000/game/${gameId}`)
+      axios.get(`http://150.95.111.7:5000/game/${gameId}`)
         .then(response => {
           setBoard(JSON.parse(response.data.board_state));
           setCurrentTurn(response.data.current_turn);
@@ -124,7 +124,7 @@ const ChessPuzzle = ({ gameId }) => {
   }, [gameId]);
 
   const fetchSavedGames = () => {
-    axios.get("http://localhost:5000/games")
+    axios.get("http://150.95.111.7:5000/games")
       .then(response => {
         setSavedGames(response.data);
       })
@@ -137,7 +137,7 @@ const ChessPuzzle = ({ gameId }) => {
       return;
     }
 
-    axios.post("http://localhost:5000/save-game", {
+    axios.post("http://150.95.111.7:5000/save-game", {
       name: gameName,
       board_state: JSON.stringify(board),
       current_turn: currentTurn,
@@ -162,7 +162,7 @@ const ChessPuzzle = ({ gameId }) => {
       return;
     }
   
-    axios.delete(`http://localhost:5000/game/${gameId}`)
+    axios.delete(`http://150.95.111.7:5000/game/${gameId}`)
       .then(response => {
         alert("Ván cờ đã được xóa thành công!");
         fetchSavedGames(); // Cập nhật danh sách game sau khi xóa
@@ -179,7 +179,7 @@ const ChessPuzzle = ({ gameId }) => {
   
 
   const loadGame = (id) => {
-    axios.get(`http://localhost:5000/game/${id}`)
+    axios.get(`http://150.95.111.7:5000/game/${id}`)
       .then(response => {
         setBoard(JSON.parse(response.data.board_state));
         setCurrentTurn(response.data.current_turn);

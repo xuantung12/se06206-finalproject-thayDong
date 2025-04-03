@@ -6,13 +6,18 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: '*',  // Allow all origins
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Specify allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'],  // Specify allowed headers
+    credentials: true  // Allow cookies to be sent
+}));
 app.use(express.json({ limit: '5mb' })); // Increased limit for larger JSON payloads
 app.use('/uploads', express.static('uploads'));
 
 // MySQL connection
 const db = mysql.createConnection({
-    host: 'localhost',
+    host: '150.95.111.7',
     user: 'root',
     password: '',
     database: 'chess_db'
@@ -108,8 +113,8 @@ app.post('/save-game', (req, res) => {
     }
 
     // Convert board_state to string if it's not already
-    const boardStateJSON = typeof board_state === 'string' 
-        ? board_state 
+    const boardStateJSON = typeof board_state === 'string'
+        ? board_state
         : JSON.stringify(board_state);
 
     const sql = "INSERT INTO chess_games (name, board_state, current_turn, difficulty_rating) VALUES (?, ?, ?, ?)";
@@ -119,9 +124,9 @@ app.post('/save-game', (req, res) => {
             console.error("Error saving game:", err);
             return res.status(500).json({ error: "Failed to save game" });
         }
-        res.json({ 
-            message: "Game saved successfully!", 
-            gameId: result.insertId 
+        res.json({
+            message: "Game saved successfully!",
+            gameId: result.insertId
         });
     });
 });
@@ -129,7 +134,7 @@ app.post('/save-game', (req, res) => {
 // API: Get a list of saved games with difficulty ratings
 app.get('/games', (req, res) => {
     db.query(
-        "SELECT id, name, difficulty_rating, created_at FROM chess_games ORDER BY created_at DESC", 
+        "SELECT id, name, difficulty_rating, created_at FROM chess_games ORDER BY created_at DESC",
         (err, result) => {
             if (err) {
                 console.error("Error fetching games:", err);
@@ -145,8 +150,8 @@ app.get('/game/:id', (req, res) => {
     const gameId = req.params.id;
 
     db.query(
-        "SELECT * FROM chess_games WHERE id = ?", 
-        [gameId], 
+        "SELECT * FROM chess_games WHERE id = ?",
+        [gameId],
         (err, result) => {
             if (err) {
                 console.error("Error fetching game:", err);
@@ -167,8 +172,8 @@ app.delete('/game/:id', (req, res) => {
     const gameId = req.params.id;
 
     db.query(
-        "DELETE FROM chess_games WHERE id = ?", 
-        [gameId], 
+        "DELETE FROM chess_games WHERE id = ?",
+        [gameId],
         (err, result) => {
             if (err) {
                 console.error("Error deleting game:", err);
@@ -331,4 +336,4 @@ app.delete('/uploads/:id', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server đang chạy tại http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server đang chạy tại http://150.95.111.7:${PORT}`));

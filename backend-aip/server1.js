@@ -14,14 +14,14 @@ const server = http.createServer(app);
 
 // ✅ Cấu hình CORS - Chấp nhận nhiều nguồn
 const allowedOrigins = [
-    "http://localhost:3000",
-    "http://localhost:3002",
+    "http://150.95.111.7:3000",
+    "http://150.95.111.7:3002",
     "http://150.95.113.55",
     "http://150.95.113.55:3000",
     "http://150.95.113.55:3002",
     // Thêm HTTPS nếu cần
-    "https://localhost:3000",
-    "https://localhost:3002",
+    "https://150.95.111.7:3000",
+    "https://150.95.111.7:3002",
     "https://150.95.113.55",
     "https://150.95.113.55:3000",
     "https://150.95.113.55:3002"
@@ -68,7 +68,7 @@ app.use(bodyParser.json());
 
 // ✅ Kết nối MySQL
 const db = mysql.createConnection({
-    host: 'localhost',
+    host: '150.95.111.7',
     user: 'root',
     password: '',
     database: 'chess_db'
@@ -241,6 +241,6 @@ io.on("connection", socket => {
 // ✅ Kiểm tra port trước khi chạy
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
-    console.log(`🚀 Server đang chạy tại http://localhost:${PORT}`);
+    console.log(`🚀 Server đang chạy tại http://150.95.111.7:${PORT}`);
     console.log(`✅ Chấp nhận kết nối từ: ${allowedOrigins.join(', ')}`);
 });

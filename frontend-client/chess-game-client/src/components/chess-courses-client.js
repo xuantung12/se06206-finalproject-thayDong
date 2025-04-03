@@ -23,7 +23,7 @@ import {
 
 
 
-const API_URL = "http://localhost:5000/courses";
+const API_URL = "http://150.95.111.7:5000/courses";
 
 
 
@@ -96,7 +96,7 @@ function ChessCourses() {
 
   useEffect(() => {
     // Gọi API lấy user từ session
-    axios.get("http://localhost:3001/session-user", { withCredentials: true })
+    axios.get("http://150.95.111.7:3001/session-user", { withCredentials: true })
       .then(response => {
         setUser(response.data.user);
       })
@@ -123,7 +123,7 @@ function ChessCourses() {
 
 
   const handleLogout = () => {
-    axios.post("http://localhost:3001/logout", {}, { withCredentials: true })
+    axios.post("http://150.95.111.7:3001/logout", {}, { withCredentials: true })
       .then(() => {
         setUser(null);
       })
@@ -303,12 +303,12 @@ function ChessCourses() {
               {/* Khu vực hình ảnh */}
               <div className="w-1/4 flex flex-col gap-2">
                 <img
-                  src={`http://localhost:5000/uploads/${course.image1}`}
+                  src={`http://150.95.111.7:5000/uploads/${course.image1}`}
                   alt="Ảnh 1"
                   className="w-full h-auto max-h-32 object-contain rounded-lg flex-shrink-0"
                 />
                 <img
-                  src={`http://localhost:5000/uploads/${course.image2}`}
+                  src={`http://150.95.111.7:5000/uploads/${course.image2}`}
                   alt="Ảnh 2"
                   className="w-full h-auto max-h-32 object-contain rounded-lg flex-shrink-0"
                 />

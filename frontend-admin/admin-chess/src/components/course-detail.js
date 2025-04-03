@@ -4,7 +4,7 @@ import axios from "axios";
 import { Clapperboard } from "lucide-react"; // Import biểu tượng từ lucide-react
 
 
-const API_URL = "http://localhost:5000/uploads"; // API lưu nội dung tải lên
+const API_URL = "http://150.95.111.7:5000/uploads"; // API lưu nội dung tải lên
 
 
 function CourseDetail() {
@@ -87,12 +87,12 @@ function CourseDetail() {
           {/* Ảnh bên trái */}
           <div className="flex flex-col items-center gap-4 md:w-1/3">
             <img
-              src={`http://localhost:5000/uploads/${course?.image1}`}
+              src={`http://150.95.111.7:5000/uploads/${course?.image1}`}
               alt="Ảnh 1"
               className="w-full object-cover rounded-lg shadow-md"
             />
             <img
-              src={`http://localhost:5000/uploads/${course?.image2}`}
+              src={`http://150.95.111.7:5000/uploads/${course?.image2}`}
               alt="Ảnh 2"
               className="w-full object-cover rounded-lg shadow-md"
             />
@@ -141,11 +141,11 @@ function CourseDetail() {
                     <div className="w-full md:w-2/3">
                       {upload.type.includes("video") ? (
                         <video controls className="w-full h-64 object-cover rounded-lg">
-                          <source src={`http://localhost:5000/uploads/${upload.file}`} type="video/mp4" />
+                          <source src={`http://150.95.111.7:5000/uploads/${upload.file}`} type="video/mp4" />
                         </video>
                       ) : (
                         <img
-                          src={`http://localhost:5000/uploads/${upload.file}`}
+                          src={`http://150.95.111.7:5000/uploads/${upload.file}`}
                           alt="Upload"
                           className="w-full object-cover rounded-lg"
                         />

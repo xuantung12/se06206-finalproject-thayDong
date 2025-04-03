@@ -63,7 +63,7 @@ function CourseDetail() {
 
   useEffect(() => {
     // Gọi API lấy user từ session
-    axios.get("http://localhost:3001/session-user", { withCredentials: true })
+    axios.get("http://150.95.111.7:3001/session-user", { withCredentials: true })
       .then(response => {
         setUser(response.data.user);
       })
@@ -86,7 +86,7 @@ function CourseDetail() {
 
 
   const handleLogout = () => {
-    axios.post("http://localhost:3001/logout", {}, { withCredentials: true })
+    axios.post("http://150.95.111.7:3001/logout", {}, { withCredentials: true })
       .then(() => {
         setUser(null);
       })
@@ -256,12 +256,12 @@ function CourseDetail() {
 
                       <div className="w-1/4 flex flex-col gap-2">
                         <img
-                          src={`http://localhost:5000/uploads/${course?.image1}`}
+                          src={`http://150.95.111.7:5000/uploads/${course?.image1}`}
                           alt="Ảnh 1"
                           className="w-full h-auto max-h-62 object-contain rounded-lg flex-shrink-0"
                         />
                         <img
-                          src={`http://localhost:5000/uploads/${course?.image2}`}
+                          src={`http://150.95.111.7:5000/uploads/${course?.image2}`}
                           alt="Ảnh 2"
                           className="w-full h-auto max-h-62 object-contain rounded-lg flex-shrink-0"
                         />
@@ -290,14 +290,14 @@ function CourseDetail() {
                       <div className="w-full">
                         {upload.type.includes("video") ? (
                           <video controls className="w-full h-64 object-contain rounded-lg ">
-                            <source src={`http://localhost:5000/uploads/${upload.file}`} type="video/mp4" />
+                            <source src={`http://150.95.111.7:5000/uploads/${upload.file}`} type="video/mp4" />
                           </video>
                         ) : (
                           <img
-                            src={`http://localhost:5000/uploads/${upload.file}`}
+                            src={`http://150.95.111.7:5000/uploads/${upload.file}`}
                             alt="Upload"
                             className="w-full object-cover rounded-lg cursor-pointer"
-                            onClick={() => setSelectedImage(`http://localhost:5000/uploads/${upload.file}`)}
+                            onClick={() => setSelectedImage(`http://150.95.111.7:5000/uploads/${upload.file}`)}
                           />
                         )}
                         {/* Đưa đoạn văn bản ra ngoài điều kiện */}

@@ -25,7 +25,7 @@ export default function HomePage() {
  
   useEffect(() => {
     // Gọi API lấy user từ session
-    axios.get("http://localhost:3001/session-user", { withCredentials: true })
+    axios.get("http://150.95.111.7:3001/session-user", { withCredentials: true })
       .then(response => {
         setUser(response.data.user);
       })
@@ -40,7 +40,7 @@ export default function HomePage() {
 
 
   const handleLogout = () => {
-    axios.post("http://localhost:3001/logout", {}, { withCredentials: true })
+    axios.post("http://150.95.111.7:3001/logout", {}, { withCredentials: true })
       .then(() => {
         setUser(null);
       })

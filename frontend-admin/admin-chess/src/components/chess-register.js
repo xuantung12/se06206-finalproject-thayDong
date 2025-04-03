@@ -37,7 +37,7 @@ const Register = () => {
 
 
     try {
-      const response = await fetch("http://localhost:3001/register", {
+      const response = await fetch("http://150.95.111.7:3001/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -53,7 +53,7 @@ const Register = () => {
 
 
         // Tự động đăng nhập sau khi đăng ký
-        const loginResponse = await fetch("http://localhost:3001/login", {
+        const loginResponse = await fetch("http://150.95.111.7:3001/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
