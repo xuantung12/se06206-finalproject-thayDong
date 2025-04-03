@@ -16,12 +16,7 @@ app.use(express.json({ limit: '5mb' })); // Increased limit for larger JSON payl
 app.use('/uploads', express.static('uploads'));
 
 // MySQL connection
-const db = mysql.createConnection({
-    host: '150.95.111.7',
-    user: 'root',
-    password: '',
-    database: 'chess_db'
-});
+const db = mysql.createConnection("mysql://root:newpassword@localhost:3306/chess_db");
 
 db.connect(err => {
     if (err) {
@@ -336,4 +331,8 @@ app.delete('/uploads/:id', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
+<<<<<<< HEAD
 app.listen(PORT, () => console.log(`Server đang chạy tại http://150.95.111.7:${PORT}`));
+=======
+app.listen(PORT, () => console.log(`Server đang chạy tại http://localhost:${PORT}`));
+>>>>>>> 0886d98bf7f4e0b7574c2d9c1dfb550305ebbb16
