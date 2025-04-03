@@ -11,12 +11,7 @@ app.use(express.json({ limit: '5mb' })); // Increased limit for larger JSON payl
 app.use('/uploads', express.static('uploads'));
 
 // MySQL connection
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'chess_db'
-});
+const db = mysql.createConnection("mysql://root:newpassword@localhost:3306/chess_db");
 
 db.connect(err => {
     if (err) {
