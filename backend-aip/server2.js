@@ -331,8 +331,4 @@ app.delete('/uploads/:id', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-<<<<<<< HEAD
 app.listen(PORT, () => console.log(`Server đang chạy tại http://150.95.111.7:${PORT}`));
-=======
-app.listen(PORT, () => console.log(`Server đang chạy tại http://localhost:${PORT}`));
->>>>>>> 0886d98bf7f4e0b7574c2d9c1dfb550305ebbb16
