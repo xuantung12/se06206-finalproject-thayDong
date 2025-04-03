@@ -23,11 +23,7 @@ import {
 
 
 
-const API_URL = "http://150.95.111.7:5000/courses";
-
-
-
-
+const API_URL = "http://localhost:5000/courses";
 
 
 
@@ -52,11 +48,6 @@ const translations = {
 
 function ChessCourses() {
   const [courses, setCourses] = useState([]);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [image1, setImage1] = useState(null);
-  const [image2, setImage2] = useState(null);
-  const [editId, setEditId] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [keepOpen, setKeepOpen] = useState(false);
   const [playMenuOpen, setPlayMenuOpen] = useState(false);
@@ -94,48 +85,9 @@ function ChessCourses() {
 
 
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("description", description);
-    if (image1) formData.append("image1", image1);
-    if (image2) formData.append("image2", image2);
+  
 
 
-
-
-
-
-
-
-    try {
-      if (editId) {
-        await axios.put(`${API_URL}/${editId}`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      } else {
-        await axios.post(API_URL, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      }
-      fetchCourses();
-      resetForm();
-    } catch (error) {
-      console.error("Lỗi gửi dữ liệu:", error);
-    }
-  };
-
-
-
-
-  const resetForm = () => {
-    setName("");
-    setDescription("");
-    setImage1(null);
-    setImage2(null);
-    setEditId(null);
-  };
 
 
 
@@ -144,7 +96,7 @@ function ChessCourses() {
 
   useEffect(() => {
     // Gọi API lấy user từ session
-    axios.get("http://150.95.111.7:3001/session-user", { withCredentials: true })
+    axios.get("http://localhost:3001/session-user", { withCredentials: true })
       .then(response => {
         setUser(response.data.user);
       })
@@ -171,7 +123,7 @@ function ChessCourses() {
 
 
   const handleLogout = () => {
-    axios.post("http://150.95.111.7:3001/logout", {}, { withCredentials: true })
+    axios.post("http://localhost:3001/logout", {}, { withCredentials: true })
       .then(() => {
         setUser(null);
       })
@@ -202,10 +154,17 @@ function ChessCourses() {
 
  
   return (
-    <div className={`h-screen overflow-auto flex ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`} style={{ backgroundImage: "url('/images/backgrou.jpg')" }}>
+    <div
+  className={`min-h-screen flex ${
+    darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
+  }`}
+  style={{ backgroundImage: "url('/images/sonha.svg')", backgroundSize: "cover", backgroundPosition: "center" }}
+>
+
+
       {/* Sidebar */}
             <aside
-              className={`fixed top-0 left-0 h-screen bg-orange-900 text-white flex flex-col items-center transition-all duration-300 ${
+              className={`min-h-screen bg-orange-900 text-white flex flex-col items-center transition-all duration-300 ${
                 isExpanded ? "w-64" : "w-16"
               }`}
               onMouseEnter={() => {
@@ -282,7 +241,7 @@ function ChessCourses() {
                     </button>
                   </div>
                 ) : (
-                  <MenuItem icon={<FaSignInAlt />} text={language === "en" ? "Sign In" : "Đăng nhập"} isExpanded={isExpanded} link="/chess-login-client" />
+                  <MenuItem icon={<FaSignInAlt />} text={language === "en" ? "Sign In" : "Đăng nhập"} isExpanded={isExpanded} link="/chess-login" />
                 )}
               </div>
             </aside>
@@ -304,11 +263,11 @@ function ChessCourses() {
                 setIsExpanded(false);
               }}
             >
-              <a href="/chess-offline-client" className="flex items-center gap-2 p-3 hover:bg-gray-200">
+              <a href="/chess-offline" className="flex items-center gap-2 p-3 hover:bg-gray-200">
                 <img src="images/play-computer-sm.svg" alt="" />
                 {language === "en" ? "Play vs Computer" : "Chơi với máy"}
               </a>
-              <a href="/chess-online-client" className="flex items-center gap-2 p-3 hover:bg-gray-200">
+              <a href="/chess-online" className="flex items-center gap-2 p-3 hover:bg-gray-200">
                 <img src="images/challenge-friends.svg" alt="" />
                 {language === "en" ? "Play Online" : "Chơi trực tuyến"}
               </a>
@@ -326,13 +285,14 @@ function ChessCourses() {
        
            
             <div className={`max-w-4xl mx-auto mt-16 p-6 mb-[10px] rounded-lg shadow-md overflow-y-auto max-h-[90vh]
-                scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 transition-all duration-300 ${darkMode ? "bg-gray-800 text-white" : "bg-orange-100 text-gray-900"}`}>
+                scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 transition-all duration-300 ${darkMode ? "bg-gray-800 text-white" : "bg-orange-50 text-gray-900"}`}>
 
 
         <h1 className="text-3xl font-bold text-center mb-6 flex items-center justify-center gap-2">
         <GraduationCap className="w-10 h-10 text-blue-500" />
         {translations[language].manageCourses}
         </h1>
+        <div className="grid grid-cols-1 gap-4 mt-6">
         {courses.map((course) => (
             <div
               key={course.id}
@@ -343,12 +303,12 @@ function ChessCourses() {
               {/* Khu vực hình ảnh */}
               <div className="w-1/4 flex flex-col gap-2">
                 <img
-                  src={`http://150.95.111.7:5000/uploads/${course.image1}`}
+                  src={`http://localhost:5000/uploads/${course.image1}`}
                   alt="Ảnh 1"
                   className="w-full h-auto max-h-32 object-contain rounded-lg flex-shrink-0"
                 />
                 <img
-                  src={`http://150.95.111.7:5000/uploads/${course.image2}`}
+                  src={`http://localhost:5000/uploads/${course.image2}`}
                   alt="Ảnh 2"
                   className="w-full h-auto max-h-32 object-contain rounded-lg flex-shrink-0"
                 />
@@ -357,20 +317,26 @@ function ChessCourses() {
 
               {/* Nội dung */}
               <div className="w-3/4">
-                <h3 className="font-bold text-lg text-gray-800 truncate">
-                  <Link to="/course-detail-client" state={{ course: course }} className="hover:text-orange-600">
-                    {course.name}
-                  </Link>
-                </h3>
-                <p className="text-gray-600 mt-1 line-clamp-3 overflow-hidden">
-                  {course.description}
-                </p>
+              <h3 className={`font-bold text-lg text-gray-800 truncate ${darkMode ? " text-white" : " text-gray-900"}`}>
+  <Link to="/course-detail-client" state={{ course: course }} className="hover:text-orange-600">
+    {course.name}
+  </Link>
+</h3>
+
+
+                <p className={`text-gray-900 mt-1 line-clamp-3 overflow-hidden
+  ${darkMode ? "bg-gray-10 text-white" : "bg-gray-10 text-gray-900"}`}>
+  {course.description}
+</p>
+
+
 
 
               </div>
             </div>
           ))}
         </div>
+    </div>
     </div>
   );
 }
@@ -386,10 +352,5 @@ function MenuItem({ icon, text, isExpanded, link }) {
     </a>
   );
 }
-
-
-
-
-
 
 export default ChessCourses;
