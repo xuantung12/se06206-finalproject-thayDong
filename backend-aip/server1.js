@@ -67,12 +67,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 
 // ✅ Kết nối MySQL
-const db = mysql.createConnection({
-    host: '150.95.111.7',
-    user: 'root',
-    password: '',
-    database: 'chess_db'
-});
+const db = mysql.createConnection("mysql://root:newpassword@localhost:3306/chess_db");
 
 db.connect(err => {
     if (err) {
