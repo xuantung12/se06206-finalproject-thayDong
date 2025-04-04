@@ -16,6 +16,7 @@ import {
 
 
 
+const API_URL = "http://150.95.111.7:5000/uploads"; // API lưu nội dung tải lên
 
 
 const translations = {
@@ -46,6 +47,9 @@ function CourseDetail() {
 
 
 
+
+  const [file, setFile] = useState(null);
+  const [note, setNote] = useState("");
   const [uploads, setUploads] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [keepOpen, setKeepOpen] = useState(false);
@@ -56,9 +60,48 @@ function CourseDetail() {
   const [selectedImage, setSelectedImage] = useState(null);
 
 
+  useEffect(() => {
+    if (course) {
+      fetchUploads();
+    }
+  }, [course]);
 
 
 
+
+  const fetchUploads = async () => {
+    try {
+      const response = await axios.get(`${API_URL}?courseId=${course.id}`);
+      setUploads(response.data);
+    } catch (error) {
+      console.error("Lỗi lấy dữ liệu:", error);
+    }
+  };
+
+
+
+
+  const handleUpload = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("courseId", course.id);
+    if (file) formData.append("file", file);
+    formData.append("note", note);
+
+
+
+
+    try {
+      await axios.post(API_URL, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      fetchUploads();
+      setFile(null);
+      setNote("");
+    } catch (error) {
+      console.error("Lỗi tải lên:", error);
+    }
+  };
 
 
   useEffect(() => {

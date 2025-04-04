@@ -24,66 +24,66 @@ db.connect(err => {
     } else {
         console.log("Connected to MySQL");
 
-        // Create chess_games table if it doesn't exist
-        const createChessTableQuery = `
-            CREATE TABLE IF NOT EXISTS chess_games (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(100) NOT NULL,
-                board_state JSON NOT NULL,
-                current_turn VARCHAR(10) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                difficulty_rating TINYINT NOT NULL CHECK (difficulty_rating BETWEEN 1 AND 10)
-            )
-        `;
+        // // Create chess_games table if it doesn't exist
+        // const createChessTableQuery = `
+        //     CREATE TABLE IF NOT EXISTS chess_games (
+        //         id INT AUTO_INCREMENT PRIMARY KEY,
+        //         name VARCHAR(100) NOT NULL,
+        //         board_state JSON NOT NULL,
+        //         current_turn VARCHAR(10) NOT NULL,
+        //         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        //         difficulty_rating TINYINT NOT NULL CHECK (difficulty_rating BETWEEN 1 AND 10)
+        //     )
+        // `;
 
-        db.query(createChessTableQuery, (err, result) => {
-            if (err) {
-                console.error("Error creating chess_games table:", err);
-            } else {
-                console.log("chess_games table checked/created successfully");
-            }
-        });
+        // db.query(createChessTableQuery, (err, result) => {
+        //     if (err) {
+        //         console.error("Error creating chess_games table:", err);
+        //     } else {
+        //         console.log("chess_games table checked/created successfully");
+        //     }
+        // });
 
-        // Create courses table if it doesn't exist
-        const createCoursesTableQuery = `
-            CREATE TABLE IF NOT EXISTS courses (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(100) NOT NULL,
-                description TEXT,
-                image1 VARCHAR(255),
-                image2 VARCHAR(255),
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `;
+        // // Create courses table if it doesn't exist
+        // const createCoursesTableQuery = `
+        //     CREATE TABLE IF NOT EXISTS courses (
+        //         id INT AUTO_INCREMENT PRIMARY KEY,
+        //         name VARCHAR(100) NOT NULL,
+        //         description TEXT,
+        //         image1 VARCHAR(255),
+        //         image2 VARCHAR(255),
+        //         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        //     )
+        // `;
 
-        db.query(createCoursesTableQuery, (err, result) => {
-            if (err) {
-                console.error("Error creating courses table:", err);
-            } else {
-                console.log("courses table checked/created successfully");
-            }
-        });
+        // db.query(createCoursesTableQuery, (err, result) => {
+        //     if (err) {
+        //         console.error("Error creating courses table:", err);
+        //     } else {
+        //         console.log("courses table checked/created successfully");
+        //     }
+        // });
 
-        // Create course_uploads table if it doesn't exist
-        const createUploadsTableQuery = `
-            CREATE TABLE IF NOT EXISTS course_uploads (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                course_id INT NOT NULL,
-                file VARCHAR(255) NOT NULL,
-                note TEXT,
-                type VARCHAR(10) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
-            )
-        `;
+        // // Create course_uploads table if it doesn't exist
+        // const createUploadsTableQuery = `
+        //     CREATE TABLE IF NOT EXISTS course_uploads (
+        //         id INT AUTO_INCREMENT PRIMARY KEY,
+        //         course_id INT NOT NULL,
+        //         file VARCHAR(255) NOT NULL,
+        //         note TEXT,
+        //         type VARCHAR(10) NOT NULL,
+        //         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        //         FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+        //     )
+        // `;
 
-        db.query(createUploadsTableQuery, (err, result) => {
-            if (err) {
-                console.error("Error creating course_uploads table:", err);
-            } else {
-                console.log("course_uploads table checked/created successfully");
-            }
-        });
+        // db.query(createUploadsTableQuery, (err, result) => {
+        //     if (err) {
+        //         console.error("Error creating course_uploads table:", err);
+        //     } else {
+        //         console.log("course_uploads table checked/created successfully");
+        //     }
+        // });
     }
 });
 

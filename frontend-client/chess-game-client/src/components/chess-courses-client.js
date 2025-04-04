@@ -28,6 +28,10 @@ const API_URL = "http://150.95.111.7:5000/courses";
 
 
 
+
+
+
+
 const translations = {
   en: {
     manageCourses: "All Chess Courses",
@@ -48,6 +52,11 @@ const translations = {
 
 function ChessCourses() {
   const [courses, setCourses] = useState([]);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [image1, setImage1] = useState(null);
+  const [image2, setImage2] = useState(null);
+  const [editId, setEditId] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [keepOpen, setKeepOpen] = useState(false);
   const [playMenuOpen, setPlayMenuOpen] = useState(false);
@@ -85,9 +94,48 @@ function ChessCourses() {
 
 
 
-  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("description", description);
+    if (image1) formData.append("image1", image1);
+    if (image2) formData.append("image2", image2);
 
 
+
+
+
+
+
+
+    try {
+      if (editId) {
+        await axios.put(`${API_URL}/${editId}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      } else {
+        await axios.post(API_URL, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      }
+      fetchCourses();
+      resetForm();
+    } catch (error) {
+      console.error("Lỗi gửi dữ liệu:", error);
+    }
+  };
+
+
+
+
+  const resetForm = () => {
+    setName("");
+    setDescription("");
+    setImage1(null);
+    setImage2(null);
+    setEditId(null);
+  };
 
 
 
@@ -234,7 +282,7 @@ function ChessCourses() {
                     </button>
                     {/* Nút Sign Out ngay dưới avatar */}
                     <button
-                      className="mt-2 w-full flex items-center justify-center bg-red-600 text-white py-2 rounded hover:bg-red-700 transition"
+                      className="mt-2 w-full flex items-center justify-center  text-white py-2 rounded hover:bg-red-700 transition"
                       onClick={handleLogout}
                     >
                       <FaSignOutAlt className="mr-2" /> {isExpanded ? (language === "en" ? "Sign Out" : "Đăng xuất") : ""}
@@ -352,5 +400,10 @@ function MenuItem({ icon, text, isExpanded, link }) {
     </a>
   );
 }
+
+
+
+
+
 
 export default ChessCourses;
