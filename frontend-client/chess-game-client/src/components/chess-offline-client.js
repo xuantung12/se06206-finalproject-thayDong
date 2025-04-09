@@ -174,7 +174,13 @@ export default function HomePage() {
         </div>
         <div className="absolute">
           <h1 className="text-center text-2xl font-serif " >{language === "en"? "You are playing with Computer":"Bạn đang chơi với máy"}</h1>
-          <iframe src="chess.html" width="800px" height="630px" title="Chess Game"></iframe>
+          <iframe
+            src="/chessoffline/index.html"
+            width="800px"
+            height="630px"
+            title="Chess Game"
+            style={{ border: 'none' }}
+          ></iframe>
         </div>
       </main>
     </div>
