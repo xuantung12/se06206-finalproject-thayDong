@@ -26,7 +26,7 @@ export default function HomePage() {
  
   useEffect(() => {
     // Gọi API lấy user từ session
-    axios.get("http://150.95.111.7:3001/session-user", { withCredentials: true })
+    axios.get("http://localhost:3001/session-user", { withCredentials: true })
       .then(response => {
         setUser(response.data.user);
       })
@@ -41,7 +41,7 @@ export default function HomePage() {
 
 
   const handleLogout = () => {
-    axios.post("http://150.95.111.7:3001/logout", {}, { withCredentials: true })
+    axios.post("http://localhost:3001/logout", {}, { withCredentials: true })
       .then(() => {
         setUser(null);
       })
@@ -103,11 +103,11 @@ export default function HomePage() {
               }, 200);
             }}
           >
-          <MenuItem icon={<FaGamepad />} text={language === "en" ? "Play Now" : "Chơi Ngay"} isExpanded={isExpanded} link="/home-page-client" />
+          <MenuItem icon={<FaGamepad />} text={language === "en" ? "Play Now" : "Chơi Ngay"} isExpanded={isExpanded} link="/home-page" />
           </div>
-          <MenuItem icon={<FaPuzzlePiece />} text={language === "en" ? "Puzzles" : "Câu đố"} isExpanded={isExpanded} link="/chess-puzzle-client" />
-          <MenuItem icon={<FaBook />} text={language === "en" ? "Course" : "Khóa Học"} isExpanded={isExpanded} link="/chess-courses-client" />
-          <MenuItem icon={<FaCommentDots />} text={language === "en" ? "Chat" : "Trò chuyện"} isExpanded={isExpanded} link="/chess-chat-client" />
+          <MenuItem icon={<FaPuzzlePiece />} text={language === "en" ? "Puzzles" : "Câu đố"} isExpanded={isExpanded} link="/chess-puzzle" />
+          <MenuItem icon={<FaBook />} text={language === "en" ? "Course" : "Khóa Học"} isExpanded={isExpanded} link="/chess-courses" />
+          <MenuItem icon={<FaCommentDots />} text={language === "en" ? "Chat" : "Trò chuyện"} isExpanded={isExpanded} link="/chess-chat" />
         </nav>
 
 
@@ -139,7 +139,7 @@ export default function HomePage() {
               </button>
             </div>
           ) : (
-            <MenuItem icon={<FaSignInAlt />} text={language === "en" ? "Sign In" : "Đăng nhập"} isExpanded={isExpanded} link="/chess-login-client" />
+            <MenuItem icon={<FaSignInAlt />} text={language === "en" ? "Sign In" : "Đăng nhập"} isExpanded={isExpanded} link="/chess-login" />
           )}
         </div>
       </aside>
@@ -158,8 +158,8 @@ export default function HomePage() {
             setIsExpanded(false);
           }}
         >
-          <a href="/chess-offline-client" className="block p-3 hover:bg-gray-200"><img src="images/play-computer-sm.svg"></img> {language === "en" ? "Play vs Computer" : "Chơi với máy"}</a>
-              <a href="/chess-online-client" className="block p-3 hover:bg-gray-200"><img src="images/challenge-friends.svg"></img>{language === "en" ? "Play Online" : "Chơi trực tuyến"}</a>
+          <a href="/chess-offline" className="block p-3 hover:bg-gray-200"><img src="images/play-computer-sm.svg"></img> {language === "en" ? "Play vs Computer" : "Chơi với máy"}</a>
+              <a href="/chess-online" className="block p-3 hover:bg-gray-200"><img src="images/challenge-friends.svg"></img>{language === "en" ? "Play Online" : "Chơi trực tuyến"}</a>
               <a href="/option3" className="block p-3 hover:bg-gray-200">{language === "en" ? "Custom 3" : "Tùy chỉnh 3"}</a>
               <a href="/option4" className="block p-3 hover:bg-gray-200">{language === "en" ? "Custom 4" : "Tùy chỉnh 4"}</a>
         </div>
@@ -168,17 +168,13 @@ export default function HomePage() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center ">
-        <div className=" w-[100%] h-auto absolute bottom-0 left-0 size-16 pointer-events-none">
-          <img src="images/96857e5411a903ed226e3c87e54cc29c (1).svg" alt="Ảnh mẫu"
-          class="w-[100%] h-auto"></img>
+        <div className="relative">
+          <img src="./images/sonha.svg" alt="tranh sown ha" className="w-screen h-screen object-cover">
+          </img>
         </div>
-        {/* <div className=" w-[100%] h-auto absolute bottom-0 left-0 size-16 pointer-events-none">
-          <img src="/images/sonha.svg" alt="Ảnh mẫu"
-          class="w-[100%] h-auto"></img>
-        </div> */}
-        <div className="">
+        <div className="absolute">
           <h1 className="text-center text-2xl font-serif " >{language === "en"? "You are playing with Computer":"Bạn đang chơi với máy"}</h1>
-          <iframe src="/static/index.html" width="800px" height="630px" title="Chess Game"></iframe>
+          <iframe src="chess.html" width="800px" height="630px" title="Chess Game"></iframe>
         </div>
       </main>
     </div>
@@ -195,6 +191,3 @@ function MenuItem({ icon, text, isExpanded, link, onClick }) {
     </a>
   );
 }
-
-
-

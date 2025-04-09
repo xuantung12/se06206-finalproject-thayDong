@@ -4,6 +4,7 @@ import {
   FaGamepad,
   FaPuzzlePiece,
   FaBook,
+  FaTv,
   FaCommentDots,
   FaSun,
   FaMoon,
@@ -25,7 +26,7 @@ export default function HomePage() {
  
   useEffect(() => {
     // Gọi API lấy user từ session
-    axios.get("http://150.95.111.7:3001/session-user", { withCredentials: true })
+    axios.get("http://localhost:3001/session-user", { withCredentials: true })
       .then(response => {
         setUser(response.data.user);
       })
@@ -40,7 +41,7 @@ export default function HomePage() {
 
 
   const handleLogout = () => {
-    axios.post("http://150.95.111.7:3001/logout", {}, { withCredentials: true })
+    axios.post("http://localhost:3001/logout", {}, { withCredentials: true })
       .then(() => {
         setUser(null);
       })
@@ -157,8 +158,8 @@ export default function HomePage() {
             setIsExpanded(false);
           }}
         >
-          <a href="/chess-offline" className="block p-3 hover:bg-gray-200"><img src="images/play-computer-sm.svg" alt="nguoi may"></img> {language === "en" ? "Play vs Computer" : "Chơi với máy"}</a>
-              <a href="/chess-online" className="block p-3 hover:bg-gray-200"><img src="images/challenge-friends.svg" alt="2 nguoi choi"></img>{language === "en" ? "Play Online" : "Chơi trực tuyến"}</a>
+          <a href="/chess-offline" className="block p-3 hover:bg-gray-200"><img src="images/play-computer-sm.svg"></img> {language === "en" ? "Play vs Computer" : "Chơi với máy"}</a>
+              <a href="/chess-online" className="block p-3 hover:bg-gray-200"><img src="images/challenge-friends.svg"></img>{language === "en" ? "Play Online" : "Chơi trực tuyến"}</a>
               <a href="/option3" className="block p-3 hover:bg-gray-200">{language === "en" ? "Custom 3" : "Tùy chỉnh 3"}</a>
               <a href="/option4" className="block p-3 hover:bg-gray-200">{language === "en" ? "Custom 4" : "Tùy chỉnh 4"}</a>
         </div>
@@ -173,7 +174,7 @@ export default function HomePage() {
         </div>
         <div className="absolute">
           <h1 className="text-center text-2xl font-serif " >{language === "en"? "You are playing with Computer":"Bạn đang chơi với máy"}</h1>
-          <iframe src="/static/index.html" width="800px" height="630px" title="Chess Game"></iframe>
+          <iframe src="chess.html" width="800px" height="630px" title="Chess Game"></iframe>
         </div>
       </main>
     </div>
@@ -190,6 +191,3 @@ function MenuItem({ icon, text, isExpanded, link, onClick }) {
     </a>
   );
 }
-
-
-
