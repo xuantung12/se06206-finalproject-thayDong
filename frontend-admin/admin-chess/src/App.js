@@ -11,6 +11,9 @@ import ChessRegister from "./components/chess-register";
 import ChessLogin from "./components/chess-login";
 import EarthGlobeSpinner from "./components/chess-earth";
 import ChessPuzzle from "./components/chess-puzzle"
+import Tournament from "./components/tournament"
+import ActiveGames from "./components/ActiveGames";
+import SpectateGame from "./components/SpectateGame";
 
 
 const App = () => {
@@ -28,6 +31,12 @@ const App = () => {
         <Route path="/chess-login" element={<ChessLogin />} />
         <Route path="/chess-earth" element={<EarthGlobeSpinner />} />
         <Route path="/chess-puzzle" element={<ChessPuzzle/>} />
+        <Route path="/tournament" element={<Tournament/>} />
+        <Route path="/ActiveGames" element={<ActiveGames/>} />
+        <Route path="/SpectateGame" element={<SpectateGame/>} />
+        <Route path="/active-games" element={<ActiveGames />} />
+        <Route path="/spectate/:roomId" element={<SpectateGame />} />
+
       </Routes>
     </Router>
   );

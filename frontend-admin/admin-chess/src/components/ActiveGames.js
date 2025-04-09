@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { io } from "socket.io-client";
+import { Link } from "react-router-dom";
 import {
+  FaEye,
   FaGamepad,
   FaPuzzlePiece,
   FaBook,
@@ -13,8 +16,9 @@ import {
   FaSignInAlt
 } from "react-icons/fa";
 
+const socket = io("http://150.95.111.7:4000");
 
-export default function HomePage() {
+export default function ActiveGames() {
   const [darkMode, setDarkMode] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [playMenuOpen, setPlayMenuOpen] = useState(false);
@@ -22,6 +26,8 @@ export default function HomePage() {
   const [language, setLanguage] = useState("en");
   const [user, setUser] = useState(null);
 
+  const [activeGames, setActiveGames] = useState([]);
+  const [loading, setLoading] = useState(true);
 
  
   useEffect(() => {
@@ -37,6 +43,19 @@ export default function HomePage() {
 
     // Lấy trạng thái dark mode từ localStorage
     setDarkMode(localStorage.getItem("darkMode") === "true");
+
+    socket.emit("getActiveGames");
+
+    // Listen for active games updates
+    socket.on("activeGamesUpdate", (games) => {
+      setActiveGames(games);
+      setLoading(false);
+    });
+
+    return () => {
+      socket.off("activeGamesUpdate");
+    };
+
   }, []);
 
 
@@ -57,6 +76,12 @@ export default function HomePage() {
     localStorage.setItem("darkMode", newMode);
   };
 
+  const formatDuration = (startTime) => {
+    const durationInSeconds = Math.floor((Date.now() - startTime) / 1000);
+    const minutes = Math.floor(durationInSeconds / 60);
+    const seconds = durationInSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
 
   return (
     <div className={`flex ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
@@ -146,47 +171,59 @@ export default function HomePage() {
 
 
       {/* Sub-menu (Play) */}
-      {playMenuOpen && (
-        <div
-          className={`absolute ${isExpanded ? "left-64" : "left-16"} top-0 bg-white text-gray-900 shadow-lg w-48 border border-gray-300 flex flex-col min-h-screen`}
-          onMouseEnter={() => {
-            setKeepOpen(true);
-          }}
-          onMouseLeave={() => {
-            setKeepOpen(false);
-            setPlayMenuOpen(false);
-            setIsExpanded(false);
-          }}
-        >
-          <a href="/chess-offline" className="block p-3 hover:bg-gray-200"><img src="images/play-computer-sm.svg" alt="nguoi may"></img> {language === "en" ? "Play vs Computer" : "Chơi với máy"}</a>
-              <a href="/chess-online" className="block p-3 hover:bg-gray-200"><img src="images/challenge-friends.svg" alt="2 nguoi choi"></img>{language === "en" ? "Play Online" : "Chơi trực tuyến"}</a>
-              <a href="/option3" className="block p-3 hover:bg-gray-200">{language === "en" ? "Custom 3" : "Tùy chỉnh 3"}</a>
-              <a href="/option4" className="block p-3 hover:bg-gray-200">{language === "en" ? "Custom 4" : "Tùy chỉnh 4"}</a>
-        </div>
-      )}
+      
 
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center p-10">
-        <div className=" w-[100%] h-auto absolute bottom-0 left-0 size-16 pointer-events-none">
-          <img src="images/96857e5411a903ed226e3c87e54cc29c (1).svg" alt="Ảnh mẫu"
-          class="w-[100%] h-auto"></img>
+      <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-6">Trận đấu đang diễn ra</h1>
+
+      {loading ? (
+        <div className="text-center py-8">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+          <p className="mt-2">Đang tải trận đấu...</p>
         </div>
-        <div className=" w-[100%] h-auto absolute bottom-0 left-0 size-16 pointer-events-none">
-          <img src="/images/sonha.svg" alt="Ảnh mẫu"
-          class="w-[100%] h-auto"></img>
+      ) : activeGames.length === 0 ? (
+        <div className="text-center py-8 bg-gray-100 rounded-lg">
+          <p className="text-lg text-gray-600">Không có trận đấu nào đang diễn ra</p>
         </div>
-        <h2 className="text-3xl font-bold mb-5">
-          <a href="/" className="text-orange-900 hover:underline">{language === "en" ? "Welcome to CoTuong.com!" : "Chào mừng đến với CoTuong.com!"}</a>
-        </h2>
-        <div className="space-y-4 w-96">
-          <MainButton icon={<FaGamepad />} title={language === "en" ? "Play Online" : "Chơi Online"} subtitle={language === "en" ? "Challenge Players Worldwide" : "Thách đấu người chơi toàn cầu"} link="/chess-online" />
-          <MainButton icon={<FaTv />} title={language === "en" ? "Play Computer" : "Chơi với máy"} subtitle={language === "en" ? "Test Your Skills Against AI" : "Thử thách với AI"} link="/chess-offline" />
-          <MainButton icon={<FaPuzzlePiece />} title={language === "en" ? "Solve Puzzles" : "Giải đố"} subtitle={language === "en" ? "Solve Brain-Teasing Puzzles" : "Giải câu đố thử thách"} link="/puzzles" />
-          <MainButton icon={<FaBook />} title={language === "en" ? "Lessons" : "Khóa học"} subtitle={language === "en" ? "Learn How to Play" : "Học cách chơi Cờ Tướng"} link="/lessons" />
-          <MainButton icon={<FaTv />} title={language === "en" ? "Watch Games" : "Xem Trận Đấu"} subtitle={language === "en" ? "Learn from Other Players" : "Học từ người chơi khác"} link="/ActiveGames" />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {activeGames.map((game) => (
+            <div
+              key={game.roomId}
+              className="border rounded-lg shadow-md p-4 bg-white hover:shadow-lg transition-shadow"
+            >
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="font-semibold">Phòng: {game.roomId}</h3>
+                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                  Đang diễn ra
+                </span>
+              </div>
+              
+              <div className="flex justify-between mb-4">
+                <div className="text-red-600 font-medium">Quân Đỏ</div>
+                <div className="font-bold">VS</div>
+                <div className="text-gray-800 font-medium">Quân Đen</div>
+              </div>
+              
+              <div className="flex justify-between text-sm text-gray-500 mb-4">
+                <div>Thời gian: {formatDuration(game.startTime)}</div>
+                <div>Người xem: {game.spectators}</div>
+              </div>
+              
+              <Link
+                to={`/spectate/${game.roomId}`}
+                className="flex items-center justify-center w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                <FaEye className="mr-2" />
+                Xem trận đấu
+              </Link>
+            </div>
+          ))}
         </div>
-      </main>
+      )}
+    </div>
     </div>
   );
 }
