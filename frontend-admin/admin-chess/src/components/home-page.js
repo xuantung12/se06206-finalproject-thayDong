@@ -182,8 +182,8 @@ export default function HomePage() {
         <div className="space-y-4 w-96">
           <MainButton icon={<FaGamepad />} title={language === "en" ? "Play Online" : "Chơi Online"} subtitle={language === "en" ? "Challenge Players Worldwide" : "Thách đấu người chơi toàn cầu"} link="/chess-online" />
           <MainButton icon={<FaTv />} title={language === "en" ? "Play Computer" : "Chơi với máy"} subtitle={language === "en" ? "Test Your Skills Against AI" : "Thử thách với AI"} link="/chess-offline" />
-          <MainButton icon={<FaPuzzlePiece />} title={language === "en" ? "Solve Puzzles" : "Giải đố"} subtitle={language === "en" ? "Solve Brain-Teasing Puzzles" : "Giải câu đố thử thách"} link="/puzzles" />
-          <MainButton icon={<FaBook />} title={language === "en" ? "Lessons" : "Khóa học"} subtitle={language === "en" ? "Learn How to Play" : "Học cách chơi Cờ Tướng"} link="/lessons" />
+          <MainButton icon={<FaPuzzlePiece />} title={language === "en" ? "Solve Puzzles" : "Giải đố"} subtitle={language === "en" ? "Solve Brain-Teasing Puzzles" : "Giải câu đố thử thách"} link="/chess-puzzle" />
+          <MainButton icon={<FaBook />} title={language === "en" ? "Lessons" : "Khóa học"} subtitle={language === "en" ? "Learn How to Play" : "Học cách chơi Cờ Tướng"} link="/chess-courses" />
           <MainButton icon={<FaTv />} title={language === "en" ? "Watch Games" : "Xem Trận Đấu"} subtitle={language === "en" ? "Learn from Other Players" : "Học từ người chơi khác"} link="/ActiveGames" />
         </div>
       </main>
