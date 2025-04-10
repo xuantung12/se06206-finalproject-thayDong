@@ -10,8 +10,10 @@ import CourseDetail from "./components/course-detail-client";
 import ChessRegister from "./components/chess-register-client";
 import ChessLogin from "./components/chess-login-client";
 import EarthGlobeSpinner from "./components/chess-earth-client";
-import ChessPuzzle from "./components/chess-puzzle-client"
-
+import ChessPuzzle from "./components/chess-puzzle-client";
+import Tournament from "./components/tournament"
+import ActiveGames from "./components/ActiveGames";
+import SpectateGame from "./components/SpectateGame";
 
 const App = () => {
   return (
@@ -28,6 +30,11 @@ const App = () => {
         <Route path="/chess-login-client" element={<ChessLogin />} />
         <Route path="/chess-earth-client" element={<EarthGlobeSpinner />} />
         <Route path="/chess-puzzle-client" element={<ChessPuzzle/>} />
+        <Route path="/tournament" element={<Tournament/>} />
+        <Route path="/ActiveGames" element={<ActiveGames/>} />
+        <Route path="/SpectateGame" element={<SpectateGame/>} />
+        <Route path="/active-games" element={<ActiveGames />} />
+        <Route path="/spectate/:roomId" element={<SpectateGame />} />
       </Routes>
     </Router>
   );
