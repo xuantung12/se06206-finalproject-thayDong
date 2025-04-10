@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import axios from "axios";
-import EarthGlobeSpinner from "./chess-earth-client";
+import EarthGlobeSpinner from "./chess-earth";
 import { FaGamepad, FaPuzzlePiece, FaBook, FaCommentDots, FaSun, FaMoon, FaGlobe, FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 
 const socket = io("http://150.95.111.7:4000", {
@@ -851,11 +851,11 @@ const toggleDarkMode = () => {
                    }, 200);
                  }}
                >
-               <MenuItem icon={<FaGamepad />} text={language === "en" ? "Play Now" : "Chơi Ngay"} isExpanded={isExpanded} link="/home-page-client" />
+               <MenuItem icon={<FaGamepad />} text={language === "en" ? "Play Now" : "Chơi Ngay"} isExpanded={isExpanded} link="/home-page" />
                </div>
-               <MenuItem icon={<FaPuzzlePiece />} text={language === "en" ? "Puzzles" : "Câu đố"} isExpanded={isExpanded} link="/chess-puzzle-client" />
-               <MenuItem icon={<FaBook />} text={language === "en" ? "Course" : "Khóa Học"} isExpanded={isExpanded} link="/chess-courses-client" />
-               <MenuItem icon={<FaCommentDots />} text={language === "en" ? "Chat" : "Trò chuyện"} isExpanded={isExpanded} link="/chess-chat-client" />
+               <MenuItem icon={<FaPuzzlePiece />} text={language === "en" ? "Puzzles" : "Câu đố"} isExpanded={isExpanded} link="/chess-puzzle" />
+               <MenuItem icon={<FaBook />} text={language === "en" ? "Course" : "Khóa Học"} isExpanded={isExpanded} link="/chess-courses" />
+               <MenuItem icon={<FaCommentDots />} text={language === "en" ? "Chat" : "Trò chuyện"} isExpanded={isExpanded} link="/chess-chat" />
              </nav>
      
      
@@ -887,7 +887,7 @@ const toggleDarkMode = () => {
                    </button>
                  </div>
                ) : (
-                 <MenuItem icon={<FaSignInAlt />} text={language === "en" ? "Sign In" : "Đăng nhập"} isExpanded={isExpanded} link="/chess-login-client" />
+                 <MenuItem icon={<FaSignInAlt />} text={language === "en" ? "Sign In" : "Đăng nhập"} isExpanded={isExpanded} link="/chess-login" />
                )}
              </div>
            </aside>
@@ -906,8 +906,8 @@ const toggleDarkMode = () => {
                  setIsExpanded(false);
                }}
              >
-               <a href="/chess-offline-client" className="block p-3 hover:bg-gray-200"><img src="images/play-computer-sm.svg" alt=""></img> {language === "en" ? "Play vs Computer" : "Chơi với máy"}</a>
-                   <a href="/chess-online-client" className="block p-3 hover:bg-gray-200"><img src="images/challenge-friends.svg" alt=""></img>{language === "en" ? "Play Online" : "Chơi trực tuyến"}</a>
+               <a href="/chess-offline" className="block p-3 hover:bg-gray-200"><img src="images/play-computer-sm.svg" alt=""></img> {language === "en" ? "Play vs Computer" : "Chơi với máy"}</a>
+                   <a href="/chess-online" className="block p-3 hover:bg-gray-200"><img src="images/challenge-friends.svg" alt=""></img>{language === "en" ? "Play Online" : "Chơi trực tuyến"}</a>
                    <a href="/option3" className="block p-3 hover:bg-gray-200">{language === "en" ? "Custom 3" : "Tùy chỉnh 3"}</a>
                    <a href="/option4" className="block p-3 hover:bg-gray-200">{language === "en" ? "Custom 4" : "Tùy chỉnh 4"}</a>
              </div>
