@@ -1,2 +1,2 @@
 # se06206-finalproject-thayDong
- 
+hùng làm quản lí khóa học và giao diện sảnh chờ của chess-online, api chat trong chess-online, lâm đăng kí đăng nhập và chát online vân làm chess-puzzle-admin thêm các trạng thái bàn cờ lưu các trạng thái bàn cờ với mysql, thu làm chess-puzzle client tích hợp AI vào chess-puzzle để người chơi sau khi lấy trạng thái bàn cờ từ cơ sở dữ liệu có thể đánh với máy và làm chess earth, tùng làm chess-offline chess-online và theo dõi tất cả các trận đấu đang diễn ra. thu, vân làm báo cáo và silde
